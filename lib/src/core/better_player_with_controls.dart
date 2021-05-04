@@ -14,8 +14,6 @@ import 'package:better_player/src/controls/better_player_cupertino_controls.dart
 import 'package:better_player/src/controls/better_player_material_controls.dart';
 import 'package:better_player/src/core/better_player_controller.dart';
 import 'package:better_player/src/core/better_player_utils.dart';
-import 'package:better_player/src/subtitles/better_player_subtitles_configuration.dart';
-import 'package:better_player/src/subtitles/better_player_subtitles_drawer.dart';
 import 'package:better_player/src/video_player/video_player.dart';
 
 class BetterPlayerWithControls extends StatefulWidget {
@@ -29,8 +27,6 @@ class BetterPlayerWithControls extends StatefulWidget {
 }
 
 class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
-  BetterPlayerSubtitlesConfiguration get subtitlesConfiguration =>
-      widget.controller!.betterPlayerConfiguration.subtitlesConfiguration;
 
   BetterPlayerControlsConfiguration get controlsConfiguration =>
       widget.controller!.betterPlayerConfiguration.controlsConfiguration;
@@ -142,12 +138,6 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
           ),
           betterPlayerController.betterPlayerConfiguration.overlay ??
               Container(),
-          BetterPlayerSubtitlesDrawer(
-            betterPlayerController: betterPlayerController,
-            betterPlayerSubtitlesConfiguration: subtitlesConfiguration,
-            subtitles: betterPlayerController.subtitlesLines,
-            playerVisibilityStream: playerVisibilityStreamController.stream,
-          ),
           if (!placeholderOnTop) _buildPlaceholder(betterPlayerController),
           _buildControls(context, betterPlayerController),
         ],

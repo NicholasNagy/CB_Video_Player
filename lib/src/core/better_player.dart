@@ -288,6 +288,8 @@ class _BetterPlayerState extends State<BetterPlayer>
     );
   }
 
+  // Called when the system puts the app in the background or returns the app 
+  // to the foreground.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
