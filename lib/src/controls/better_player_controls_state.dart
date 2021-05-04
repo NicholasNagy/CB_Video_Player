@@ -227,7 +227,6 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
     return BetterPlayerMaterialClickableWidget(
       onTap: () {
         Navigator.of(context).pop();
-        betterPlayerController!.setupSubtitleSource(subtitlesSource);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),

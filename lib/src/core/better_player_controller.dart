@@ -240,39 +240,13 @@ class BetterPlayerController {
     ///Clear hls tracks
     betterPlayerTracks.clear();
 
-    ///Setup subtitles
-    final List<BetterPlayerSubtitlesSource>? betterPlayerSubtitlesSourceList =
-        betterPlayerDataSource.subtitles;
-    if (betterPlayerSubtitlesSourceList != null) {
-      _betterPlayerSubtitlesSourceList
-          .addAll(betterPlayerDataSource.subtitles!);
-    }
-
     if (_isDataSourceHls(betterPlayerDataSource)) {
-      _setupHlsDataSource().then((dynamic value) {
-        _setupSubtitles();
-      });
-    } else {
-      _setupSubtitles();
+      _setupHlsDataSource();
     }
 
     ///Process data source
     await _setupDataSource(betterPlayerDataSource);
     setTrack(BetterPlayerHlsTrack.defaultTrack());
-  }
-
-  ///Configure subtitles based on subtitles source.
-  void _setupSubtitles() {
-    _betterPlayerSubtitlesSourceList.add(
-      BetterPlayerSubtitlesSource(type: BetterPlayerSubtitlesSourceType.none),
-    );
-    final defaultSubtitle = _betterPlayerSubtitlesSourceList
-        .firstWhereOrNull((element) => element.selectedByDefault == true);
-
-    ///Setup subtitles (none is default)
-    setupSubtitleSource(
-        defaultSubtitle ?? _betterPlayerSubtitlesSourceList.last,
-        sourceInitialize: true);
   }
 
   ///Check if given [betterPlayerDataSource] is HLS-type data source.
@@ -295,20 +269,6 @@ class BetterPlayerController {
             hlsData, betterPlayerDataSource!.url);
       }
 
-      /// Load hls subtitles
-      if (betterPlayerDataSource?.useHlsSubtitles == true) {
-        final hlsSubtitles = await BetterPlayerHlsUtils.parseSubtitles(
-            hlsData, betterPlayerDataSource!.url);
-        hlsSubtitles.forEach((hlsSubtitle) {
-          _betterPlayerSubtitlesSourceList.add(
-            BetterPlayerSubtitlesSource(
-                type: BetterPlayerSubtitlesSourceType.network,
-                name: hlsSubtitle.name,
-                urls: hlsSubtitle.realUrls),
-          );
-        });
-      }
-
       ///Load audio tracks
       if (betterPlayerDataSource?.useHlsAudioTracks == true &&
           _isDataSourceHls(betterPlayerDataSource!)) {
@@ -318,23 +278,6 @@ class BetterPlayerController {
           setAudioTrack(_betterPlayerAudioTracks!.first);
         }
       }
-    }
-  }
-
-  ///Setup subtitles to be displayed from given subtitle source
-  Future<void> setupSubtitleSource(BetterPlayerSubtitlesSource subtitlesSource,
-      {bool sourceInitialize = false}) async {
-    _betterPlayerSubtitlesSource = subtitlesSource;
-    subtitlesLines.clear();
-    if (subtitlesSource.type != BetterPlayerSubtitlesSourceType.none) {
-      final subtitlesParsed =
-          await BetterPlayerSubtitlesFactory.parseSubtitles(subtitlesSource);
-      subtitlesLines.addAll(subtitlesParsed);
-    }
-
-    _postEvent(BetterPlayerEvent(BetterPlayerEventType.changedSubtitles));
-    if (!_disposed && !sourceInitialize) {
-      _postControllerEvent(BetterPlayerControllerEvent.changeSubtitles);
     }
   }
 

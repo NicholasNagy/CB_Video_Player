@@ -4,7 +4,6 @@ import 'package:better_player/src/configuration/better_player_data_source_type.d
 import 'package:better_player/src/configuration/better_player_drm_configuration.dart';
 import 'package:better_player/src/configuration/better_player_notification_configuration.dart';
 import 'package:better_player/src/configuration/better_player_video_format.dart';
-import 'package:better_player/src/subtitles/better_player_subtitles_source.dart';
 import 'package:flutter/widgets.dart';
 
 import 'better_player_cache_configuration.dart';
@@ -18,17 +17,11 @@ class BetterPlayerDataSource {
   ///Url of the video
   final String url;
 
-  ///Subtitles configuration
-  final List<BetterPlayerSubtitlesSource>? subtitles;
-
   ///Flag to determine if current data source is live stream
   final bool? liveStream;
 
   /// Custom headers for player
   final Map<String, String>? headers;
-
-  ///Should player use hls subtitles
-  final bool? useHlsSubtitles;
 
   ///Should player use hls tracks
   final bool? useHlsTracks;
@@ -77,10 +70,8 @@ class BetterPlayerDataSource {
     this.type,
     this.url, {
     this.bytes,
-    this.subtitles,
     this.liveStream = false,
     this.headers,
-    this.useHlsSubtitles = true,
     this.useHlsTracks = true,
     this.useHlsAudioTracks = true,
     this.hlsTrackNames,
@@ -104,10 +95,8 @@ class BetterPlayerDataSource {
   ///Bytes parameter is not used in this data source.
   factory BetterPlayerDataSource.network(
     String url, {
-    List<BetterPlayerSubtitlesSource>? subtitles,
     bool? liveStream,
     Map<String, String>? headers,
-    bool? useHlsSubtitles,
     bool? useHlsTracks,
     bool? useHlsAudioTracks,
     Map<String, String>? qualities,
@@ -122,10 +111,8 @@ class BetterPlayerDataSource {
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       url,
-      subtitles: subtitles,
       liveStream: liveStream,
       headers: headers,
-      useHlsSubtitles: useHlsSubtitles,
       useHlsTracks: useHlsTracks,
       useHlsAudioTracks: useHlsAudioTracks,
       resolutions: qualities,
@@ -142,8 +129,6 @@ class BetterPlayerDataSource {
   ///Bytes parameter is not used in this data source.
   factory BetterPlayerDataSource.file(
     String url, {
-    List<BetterPlayerSubtitlesSource>? subtitles,
-    bool? useHlsSubtitles,
     bool? useHlsTracks,
     Map<String, String>? qualities,
     BetterPlayerCacheConfiguration? cacheConfiguration,
@@ -154,8 +139,6 @@ class BetterPlayerDataSource {
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.file,
       url,
-      subtitles: subtitles,
-      useHlsSubtitles: useHlsSubtitles,
       useHlsTracks: useHlsTracks,
       resolutions: qualities,
       cacheConfiguration: cacheConfiguration,
@@ -171,8 +154,6 @@ class BetterPlayerDataSource {
   factory BetterPlayerDataSource.memory(
     List<int> bytes, {
     String? videoExtension,
-    List<BetterPlayerSubtitlesSource>? subtitles,
-    bool? useHlsSubtitles,
     bool? useHlsTracks,
     Map<String, String>? qualities,
     BetterPlayerCacheConfiguration? cacheConfiguration,
@@ -185,8 +166,6 @@ class BetterPlayerDataSource {
       "",
       videoExtension: videoExtension,
       bytes: bytes,
-      subtitles: subtitles,
-      useHlsSubtitles: useHlsSubtitles,
       useHlsTracks: useHlsTracks,
       resolutions: qualities,
       cacheConfiguration: cacheConfiguration,
@@ -201,10 +180,8 @@ class BetterPlayerDataSource {
     BetterPlayerDataSourceType? type,
     String? url,
     List<int>? bytes,
-    List<BetterPlayerSubtitlesSource>? subtitles,
     bool? liveStream,
     Map<String, String>? headers,
-    bool? useHlsSubtitles,
     bool? useHlsTracks,
     bool? useHlsAudioTracks,
     Map<String, String>? resolutions,
@@ -221,10 +198,8 @@ class BetterPlayerDataSource {
       type ?? this.type,
       url ?? this.url,
       bytes: bytes ?? this.bytes,
-      subtitles: subtitles ?? this.subtitles,
       liveStream: liveStream ?? this.liveStream,
       headers: headers ?? this.headers,
-      useHlsSubtitles: useHlsSubtitles ?? this.useHlsSubtitles,
       useHlsTracks: useHlsTracks ?? this.useHlsTracks,
       useHlsAudioTracks: useHlsAudioTracks ?? this.useHlsAudioTracks,
       resolutions: resolutions ?? this.resolutions,
