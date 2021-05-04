@@ -837,38 +837,6 @@ class BetterPlayerController {
     _postEvent(BetterPlayerEvent(BetterPlayerEventType.changedResolution));
   }
 
-  ///Setup translations for given locale. In normal use cases it shouldn't be
-  ///called manually.
-  void setupTranslations(Locale locale) {
-    // ignore: unnecessary_null_comparison
-    if (locale != null) {
-      final String languageCode = locale.languageCode;
-      translations = betterPlayerConfiguration.translations?.firstWhereOrNull(
-              (translations) => translations.languageCode == languageCode) ??
-          _getDefaultTranslations(locale);
-    } else {
-      BetterPlayerUtils.log("Locale is null. Couldn't setup translations.");
-    }
-  }
-
-  ///Setup default translations for selected user locale. These translations
-  ///are pre-build in.
-  BetterPlayerTranslations _getDefaultTranslations(Locale locale) {
-    final String languageCode = locale.languageCode;
-    switch (languageCode) {
-      case "pl":
-        return BetterPlayerTranslations.polish();
-      case "zh":
-        return BetterPlayerTranslations.chinese();
-      case "hi":
-        return BetterPlayerTranslations.hindi();
-      case "tr":
-        return BetterPlayerTranslations.turkish();
-      default:
-        return BetterPlayerTranslations();
-    }
-  }
-
   ///Flag which determines whenever current data source has started.
   bool get hasCurrentDataSourceStarted => _hasCurrentDataSourceStarted;
 

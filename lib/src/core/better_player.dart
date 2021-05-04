@@ -92,18 +92,6 @@ class _BetterPlayerState extends State<BetterPlayer>
   Future<void> _setup() async {
     _controllerEventSubscription =
         widget.controller.controllerEventStream.listen(onControllerEvent);
-
-    //Default locale
-    var locale = const Locale("en", "US");
-    try {
-      if (mounted) {
-        final contextLocale = Localizations.localeOf(context);
-        locale = contextLocale;
-      }
-    } catch (exception) {
-      BetterPlayerUtils.log(exception.toString());
-    }
-    widget.controller.setupTranslations(locale);
   }
 
   @override

@@ -1,7 +1,6 @@
 // Flutter imports:
 // Project imports:
 import 'package:better_player/better_player.dart';
-import 'package:better_player/src/configuration/better_player_translations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -84,10 +83,6 @@ class BetterPlayerConfiguration {
   ///Defines function which will react on player visibility changed
   final Function(double visibilityFraction)? playerVisibilityChangedBehavior;
 
-  ///Defines translations used in player. If null, then default english translations
-  ///will be used.
-  final List<BetterPlayerTranslations>? translations;
-
   ///Defines if player should auto detect full screen device orientation based
   ///on aspect ratio of the video. If aspect ratio of the video is < 1 then
   ///video will played in full screen in portrait mode. If aspect ratio is >= 1
@@ -138,7 +133,6 @@ class BetterPlayerConfiguration {
     this.fit = BoxFit.fill,
     this.rotation = 0,
     this.playerVisibilityChangedBehavior,
-    this.translations,
     this.autoDetectFullscreenDeviceOrientation = false,
     this.handleLifecycle = true,
     this.autoDispose = true,
@@ -167,7 +161,6 @@ class BetterPlayerConfiguration {
     BoxFit? fit,
     double? rotation,
     Function(double visibilityFraction)? playerVisibilityChangedBehavior,
-    List<BetterPlayerTranslations>? translations,
     bool? autoDetectFullscreenDeviceOrientation,
   }) {
     return BetterPlayerConfiguration(
@@ -199,7 +192,6 @@ class BetterPlayerConfiguration {
       rotation: rotation ?? this.rotation,
       playerVisibilityChangedBehavior: playerVisibilityChangedBehavior ??
           this.playerVisibilityChangedBehavior,
-      translations: translations ?? this.translations,
       autoDetectFullscreenDeviceOrientation:
           autoDetectFullscreenDeviceOrientation ??
               this.autoDetectFullscreenDeviceOrientation,
