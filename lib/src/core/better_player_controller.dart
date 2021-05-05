@@ -39,9 +39,6 @@ class BetterPlayerController {
   ///General configuration used in controller instance.
   final BetterPlayerConfiguration betterPlayerConfiguration;
 
-  ///Playlist configuration used in controller instance.
-  final BetterPlayerPlaylistConfiguration? betterPlayerPlaylistConfiguration;
-
   ///List of event listeners, which listen to events.
   final List<Function(BetterPlayerEvent)?> _eventListeners = [];
 
@@ -182,7 +179,6 @@ class BetterPlayerController {
 
   BetterPlayerController(
     this.betterPlayerConfiguration, {
-    this.betterPlayerPlaylistConfiguration,
     BetterPlayerDataSource? betterPlayerDataSource,
   }) {
     _eventListeners.add(eventListener);
@@ -485,8 +481,6 @@ class BetterPlayerController {
     }
     if (moment > currentDuration) {
       _postEvent(BetterPlayerEvent(BetterPlayerEventType.finished));
-    } else {
-      cancelNextVideoTimer();
     }
   }
 
@@ -650,46 +644,6 @@ class BetterPlayerController {
       throw StateError("The data source has not been initialized");
     }
     return videoPlayerController?.value.initialized;
-  }
-
-  ///Start timer which will trigger next video. Used in playlist. Do not use
-  ///manually.
-  void startNextVideoTimer() {
-    if (_nextVideoTimer == null) {
-      _nextVideoTime =
-          betterPlayerPlaylistConfiguration!.nextVideoDelay.inSeconds;
-      nextVideoTimeStreamController.add(_nextVideoTime);
-      if (_nextVideoTime == 0) {
-        return;
-      }
-
-      _nextVideoTimer =
-          Timer.periodic(const Duration(milliseconds: 1000), (_timer) async {
-        if (_nextVideoTime == 1) {
-          _timer.cancel();
-          _nextVideoTimer = null;
-        }
-        if (_nextVideoTime != null) {
-          _nextVideoTime = _nextVideoTime! - 1;
-        }
-        nextVideoTimeStreamController.add(_nextVideoTime);
-      });
-    }
-  }
-
-  ///Cancel next video timer. Used in playlist. Do not use manually.
-  void cancelNextVideoTimer() {
-    _nextVideoTime = null;
-    nextVideoTimeStreamController.add(_nextVideoTime);
-    _nextVideoTimer?.cancel();
-    _nextVideoTimer = null;
-  }
-
-  ///Play next video form playlist. Do not use manually.
-  void playNextVideo() {
-    _nextVideoTime = 0;
-    nextVideoTimeStreamController.add(_nextVideoTime);
-    cancelNextVideoTimer();
   }
 
   ///Setup track parameters for currently played video. Can be used only for HLS

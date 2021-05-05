@@ -103,7 +103,6 @@ class _BetterPlayerCupertinoControlsState
               Expanded(child: Center(child: _buildLoadingWidget()))
             else
               _buildHitArea(),
-            _buildNextVideoWidget(),
             _buildBottomBar(backgroundColor, iconColor, barHeight),
           ],
         ),
@@ -449,41 +448,6 @@ class _BetterPlayerCupertinoControlsState
     );
   }
 
-  Widget _buildNextVideoWidget() {
-    return StreamBuilder<int?>(
-      stream: _betterPlayerController!.nextVideoTimeStreamController.stream,
-      builder: (context, snapshot) {
-        final time = snapshot.data;
-        if (time != null && time > 0) {
-          return InkWell(
-            onTap: () {
-              _betterPlayerController!.playNextVideo();
-            },
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 4, right: 8),
-                decoration: BoxDecoration(
-                  color: _controlsConfiguration.controlBarColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    " $time ...",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-          );
-        } else {
-          return const SizedBox();
-        }
-      },
-    );
-  }
-
   @override
   void cancelAndRestartTimer() {
     _hideTimer?.cancel();
@@ -576,14 +540,12 @@ class _BetterPlayerCupertinoControlsState
           if (_betterPlayerController!.betterPlayerDataSource?.liveStream ==
               true) {
             _betterPlayerController!.play();
-            _betterPlayerController!.cancelNextVideoTimer();
           }
         } else {
           if (isFinished) {
             _betterPlayerController!.seekTo(const Duration());
           }
           _betterPlayerController!.play();
-          _betterPlayerController!.cancelNextVideoTimer();
         }
       }
     });

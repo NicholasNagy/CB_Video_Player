@@ -300,7 +300,6 @@ class _BetterPlayerMaterialControlsState
             child: Stack(
               children: [
                 _buildMiddleRow(),
-                _buildNextVideoWidget(),
               ],
             ),
           ),
@@ -399,41 +398,6 @@ class _BetterPlayerMaterialControlsState
           setState(() {
             _hideStuff = true;
           });
-        }
-      },
-    );
-  }
-
-  Widget _buildNextVideoWidget() {
-    return StreamBuilder<int?>(
-      stream: _betterPlayerController!.nextVideoTimeStreamController.stream,
-      builder: (context, snapshot) {
-        final time = snapshot.data;
-        if (time != null && time > 0) {
-          return BetterPlayerMaterialClickableWidget(
-            onTap: () {
-              _betterPlayerController!.playNextVideo();
-            },
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 4, right: 24),
-                decoration: BoxDecoration(
-                  color: _controlsConfiguration.controlBarColor,
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    "$time ...",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-          );
-        } else {
-          return const SizedBox();
         }
       },
     );
@@ -583,7 +547,6 @@ class _BetterPlayerMaterialControlsState
             _betterPlayerController!.seekTo(const Duration());
           }
           _betterPlayerController!.play();
-          _betterPlayerController!.cancelNextVideoTimer();
         }
       }
     });
