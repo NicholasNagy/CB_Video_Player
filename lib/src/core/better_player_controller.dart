@@ -9,7 +9,6 @@ import 'package:better_player/src/configuration/better_player_controller_event.d
 import 'package:better_player/src/configuration/better_player_drm_type.dart';
 import 'package:better_player/src/configuration/better_player_event.dart';
 import 'package:better_player/src/configuration/better_player_event_type.dart';
-import 'package:better_player/src/configuration/better_player_translations.dart';
 import 'package:better_player/src/configuration/better_player_video_format.dart';
 import 'package:better_player/src/core/better_player_controller_provider.dart';
 
@@ -103,9 +102,6 @@ class BetterPlayerController {
 
   ///Was player playing before automatic pause.
   bool? _wasPlayingBeforePause;
-
-  ///Currently used translations
-  BetterPlayerTranslations translations = BetterPlayerTranslations();
 
   ///Has current data source started
   bool _hasCurrentDataSourceStarted = false;

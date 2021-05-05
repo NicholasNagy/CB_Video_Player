@@ -58,79 +58,6 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
     betterPlayerController!.seekTo(Duration(milliseconds: min(skip, end)));
   }
 
-  void onShowMoreClicked() {
-    _showModalBottomSheet([_buildMoreOptionsList()]);
-  }
-
-  Widget _buildMoreOptionsList() {
-    final translations = betterPlayerController!.translations;
-    return SingleChildScrollView(
-      // ignore: avoid_unnecessary_containers
-      child: Container(
-        child: Column(
-          children: [
-            if (betterPlayerControlsConfiguration.enablePlaybackSpeed)
-              _buildMoreOptionsListRow(
-                  betterPlayerControlsConfiguration.playbackSpeedIcon,
-                  translations.overflowMenuPlaybackSpeed, () {
-                Navigator.of(context).pop();
-                _showSpeedChooserWidget();
-              }),
-            if (betterPlayerControlsConfiguration.enableQualities)
-              _buildMoreOptionsListRow(
-                  betterPlayerControlsConfiguration.qualitiesIcon,
-                  translations.overflowMenuQuality, () {
-                Navigator.of(context).pop();
-                _showQualitiesSelectionWidget();
-              }),
-            if (betterPlayerControlsConfiguration.enableAudioTracks)
-              _buildMoreOptionsListRow(
-                  betterPlayerControlsConfiguration.audioTracksIcon,
-                  translations.overflowMenuAudioTracks, () {
-                Navigator.of(context).pop();
-                _showAudioTracksSelectionWidget();
-              }),
-            if (betterPlayerControlsConfiguration
-                .overflowMenuCustomItems.isNotEmpty)
-              ...betterPlayerControlsConfiguration.overflowMenuCustomItems.map(
-                (customItem) => _buildMoreOptionsListRow(
-                  customItem.icon,
-                  customItem.title,
-                  () {
-                    Navigator.of(context).pop();
-                    customItem.onClicked.call();
-                  },
-                ),
-              )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMoreOptionsListRow(
-      IconData icon, String name, void Function() onTap) {
-    return BetterPlayerMaterialClickableWidget(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: betterPlayerControlsConfiguration.overflowMenuIconsColor,
-            ),
-            const SizedBox(width: 16),
-            Text(
-              name,
-              style: _getOverflowMenuElementTextStyle(false),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showSpeedChooserWidget() {
     _showModalBottomSheet([
       _buildSpeedRow(0.25),
@@ -209,7 +136,7 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
 
       String? preferredName;
       if (track.height == 0 && track.width == 0 && track.bitrate == 0) {
-        preferredName = betterPlayerController!.translations.qualityAuto;
+        preferredName = "No Name";
       } else {
         preferredName = trackNames.length > index ? trackNames[index] : null;
       }
@@ -225,7 +152,7 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
     if (children.isEmpty) {
       children.add(
         _buildTrackRow(BetterPlayerHlsTrack.defaultTrack(),
-            betterPlayerController!.translations.qualityAuto),
+            null),
       );
     }
 
@@ -294,17 +221,6 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
             selectedAudioTrack != null && selectedAudioTrack == tracks[index];
         children.add(_buildAudioTrackRow(tracks[index], isSelected));
       }
-    }
-
-    if (children.isEmpty) {
-      children.add(
-        _buildAudioTrackRow(
-          BetterPlayerHlsAudioTrack(
-            label: betterPlayerController!.translations.generalDefault,
-          ),
-          true,
-        ),
-      );
     }
 
     _showModalBottomSheet(children);

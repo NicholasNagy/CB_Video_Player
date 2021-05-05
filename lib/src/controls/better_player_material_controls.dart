@@ -147,20 +147,6 @@ class _BetterPlayerMaterialControlsState
               color: _controlsConfiguration.iconsColor,
               size: 42,
             ),
-            Text(
-              _betterPlayerController!.translations.generalDefaultError,
-              style: textStyle,
-            ),
-            if (_controlsConfiguration.enableRetry)
-              TextButton(
-                onPressed: () {
-                  _betterPlayerController!.retryDataSource();
-                },
-                child: Text(
-                  _betterPlayerController!.translations.generalRetry,
-                  style: textStyle.copyWith(fontWeight: FontWeight.bold),
-                ),
-              )
           ],
         ),
       );
@@ -184,12 +170,6 @@ class _BetterPlayerMaterialControlsState
           onEnd: _onPlayerHide,
           child: Container(
             height: _controlsConfiguration.controlBarHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                _buildMoreButton(),
-              ],
-            ),
           ),
         )
       else
@@ -242,21 +222,6 @@ class _BetterPlayerMaterialControlsState
     );
   }
 
-  Widget _buildMoreButton() {
-    return BetterPlayerMaterialClickableWidget(
-      onTap: () {
-        onShowMoreClicked();
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Icon(
-          _controlsConfiguration.overflowMenuIcon,
-          color: _controlsConfiguration.iconsColor,
-        ),
-      ),
-    );
-  }
-
   Widget _buildBottomBar() {
     if (!betterPlayerController!.controlsEnabled) {
       return const SizedBox();
@@ -274,9 +239,7 @@ class _BetterPlayerMaterialControlsState
               _buildPlayPause(_controller!)
             else
               const SizedBox(),
-            if (_betterPlayerController!.isLiveStream())
-              _buildLiveWidget()
-            else
+            if (!_betterPlayerController!.isLiveStream())
               _controlsConfiguration.enableProgressText
                   ? _buildPosition()
                   : const SizedBox(),
@@ -296,17 +259,6 @@ class _BetterPlayerMaterialControlsState
               const SizedBox(),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildLiveWidget() {
-    return Expanded(
-      child: Text(
-        _betterPlayerController!.translations.controlsLive,
-        style: TextStyle(
-            color: _controlsConfiguration.liveTextColor,
-            fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -473,7 +425,7 @@ class _BetterPlayerMaterialControlsState
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Text(
-                    "${_betterPlayerController!.translations.controlsNextVideoIn} $time ...",
+                    "$time ...",
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),

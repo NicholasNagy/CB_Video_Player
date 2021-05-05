@@ -175,7 +175,6 @@ class _BetterPlayerCupertinoControlsState
                         else
                           const SizedBox(),
                         const SizedBox(width: 8),
-                        _buildLiveWidget(),
                       ],
                     )
                   : Row(
@@ -209,17 +208,6 @@ class _BetterPlayerCupertinoControlsState
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLiveWidget() {
-    return Expanded(
-      child: Text(
-        _betterPlayerController!.translations.controlsLive,
-        style: TextStyle(
-            color: _controlsConfiguration.liveTextColor,
-            fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -285,43 +273,6 @@ class _BetterPlayerCupertinoControlsState
               },
         child: Container(
           color: Colors.transparent,
-        ),
-      ),
-    );
-  }
-
-  GestureDetector _buildMoreButton(
-    VideoPlayerController? controller,
-    Color backgroundColor,
-    Color iconColor,
-    double barHeight,
-    double buttonPadding,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        onShowMoreClicked();
-      },
-      child: AnimatedOpacity(
-        opacity: _hideStuff ? 0.0 : 1.0,
-        duration: _controlsConfiguration.controlsHideTime,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 10.0),
-            child: Container(
-              color: backgroundColor,
-              child: Container(
-                height: barHeight,
-                padding: EdgeInsets.symmetric(
-                  horizontal: buttonPadding,
-                ),
-                child: Icon(
-                  _controlsConfiguration.overflowMenuIcon,
-                  color: iconColor,
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -492,16 +443,7 @@ class _BetterPlayerCupertinoControlsState
                 buttonPadding)
           else
             const SizedBox(),
-          if (_controlsConfiguration.enableOverflowMenu)
-            _buildMoreButton(
-              _controller,
-              backgroundColor,
-              iconColor,
-              barHeight,
-              buttonPadding,
-            )
-          else
-            const SizedBox(),
+          const SizedBox(),
         ],
       ),
     );
@@ -528,7 +470,7 @@ class _BetterPlayerCupertinoControlsState
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Text(
-                    "${_betterPlayerController!.translations.controlsNextVideoIn} $time ...",
+                    " $time ...",
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
@@ -698,17 +640,13 @@ class _BetterPlayerCupertinoControlsState
               color: _controlsConfiguration.iconsColor,
               size: 42,
             ),
-            Text(
-              _betterPlayerController!.translations.generalDefaultError,
-              style: textStyle,
-            ),
             if (_controlsConfiguration.enableRetry)
               TextButton(
                 onPressed: () {
                   _betterPlayerController!.retryDataSource();
                 },
                 child: Text(
-                  _betterPlayerController!.translations.generalRetry,
+                  "Retry",
                   style: textStyle.copyWith(fontWeight: FontWeight.bold),
                 ),
               )
