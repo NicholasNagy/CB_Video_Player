@@ -137,7 +137,6 @@ class _BetterPlayerMaterialControlsState
           _betterPlayerController!
               .videoPlayerController!.value.errorDescription);
     } else {
-      final textStyle = TextStyle(color: _controlsConfiguration.textColor);
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

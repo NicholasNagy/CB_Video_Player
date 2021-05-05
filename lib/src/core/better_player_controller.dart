@@ -19,7 +19,6 @@ import 'package:better_player/src/hls/better_player_hls_track.dart';
 import 'package:better_player/src/hls/better_player_hls_utils.dart';
 import 'package:better_player/src/video_player/video_player.dart';
 import 'package:better_player/src/video_player/video_player_platform_interface.dart';
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -86,9 +85,6 @@ class BetterPlayerController {
 
   ///Timer for next video. Used in playlist.
   Timer? _nextVideoTimer;
-
-  ///Time for next video.
-  int? _nextVideoTime;
 
   ///Stream controller which emits next video time.
   StreamController<int?> nextVideoTimeStreamController =

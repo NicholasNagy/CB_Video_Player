@@ -3,14 +3,9 @@ import 'dart:math';
 
 // Project imports:
 import 'package:better_player/better_player.dart';
-import 'package:better_player/src/controls/better_player_clickable_widget.dart';
-import 'package:better_player/src/core/better_player_utils.dart';
-import 'package:better_player/src/hls/better_player_hls_audio_track.dart';
-import 'package:better_player/src/hls/better_player_hls_track.dart';
 import 'package:better_player/src/video_player/video_player.dart';
 
 // Flutter imports:
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 
 ///Base class for both material and cupertino controls
@@ -58,43 +53,6 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
     betterPlayerController!.seekTo(Duration(milliseconds: min(skip, end)));
   }
 
-  void _showSpeedChooserWidget() {
-    _showModalBottomSheet([
-      _buildSpeedRow(0.25),
-      _buildSpeedRow(0.5),
-      _buildSpeedRow(0.75),
-      _buildSpeedRow(1.0),
-      _buildSpeedRow(1.25),
-      _buildSpeedRow(1.5),
-      _buildSpeedRow(1.75),
-      _buildSpeedRow(2.0),
-    ]);
-  }
-
-  Widget _buildSpeedRow(double value) {
-    final bool isSelected =
-        betterPlayerController!.videoPlayerController!.value.speed == value;
-
-    return BetterPlayerMaterialClickableWidget(
-      onTap: () {
-        Navigator.of(context).pop();
-        betterPlayerController!.setSpeed(value);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        child: Row(
-          children: [
-            const SizedBox(width: 16),
-            Text(
-              "$value x",
-              style: _getOverflowMenuElementTextStyle(isSelected),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   ///Latest value can be null
   bool isLoading(VideoPlayerValue? latestValue) {
     if (latestValue != null) {
@@ -122,153 +80,4 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
     return false;
   }
 
-  ///Build both track and resolution selection
-  ///Track selection is used for HLS videos
-  ///Resolution selection is used for normal videos
-  void _showQualitiesSelectionWidget() {
-    final List<String> trackNames =
-        betterPlayerController!.betterPlayerDataSource!.hlsTrackNames ?? [];
-    final List<BetterPlayerHlsTrack> tracks =
-        betterPlayerController!.betterPlayerTracks;
-    final List<Widget> children = [];
-    for (var index = 0; index < tracks.length; index++) {
-      final track = tracks[index];
-
-      String? preferredName;
-      if (track.height == 0 && track.width == 0 && track.bitrate == 0) {
-        preferredName = "No Name";
-      } else {
-        preferredName = trackNames.length > index ? trackNames[index] : null;
-      }
-      children.add(_buildTrackRow(tracks[index], preferredName));
-    }
-
-    final resolutions =
-        betterPlayerController!.betterPlayerDataSource!.resolutions;
-    resolutions?.forEach((key, value) {
-      children.add(_buildResolutionSelectionRow(key, value));
-    });
-
-    if (children.isEmpty) {
-      children.add(
-        _buildTrackRow(BetterPlayerHlsTrack.defaultTrack(),
-            null),
-      );
-    }
-
-    _showModalBottomSheet(children);
-  }
-
-  Widget _buildTrackRow(BetterPlayerHlsTrack track, String? preferredName) {
-    final String trackName = preferredName ??
-        "${track.width}x${track.height} ${BetterPlayerUtils.formatBitrate(track.bitrate!)}";
-
-    final selectedTrack = betterPlayerController!.betterPlayerTrack;
-    final bool isSelected = selectedTrack != null && selectedTrack == track;
-
-    return BetterPlayerMaterialClickableWidget(
-      onTap: () {
-        Navigator.of(context).pop();
-        betterPlayerController!.setTrack(track);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        child: Row(
-          children: [
-            const SizedBox(width: 16),
-            Text(
-              trackName,
-              style: _getOverflowMenuElementTextStyle(isSelected),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildResolutionSelectionRow(String name, String url) {
-    final bool isSelected =
-        url == betterPlayerController!.betterPlayerDataSource!.url;
-    return BetterPlayerMaterialClickableWidget(
-      onTap: () {
-        Navigator.of(context).pop();
-        betterPlayerController!.setResolution(url);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        child: Row(
-          children: [
-            const SizedBox(width: 16),
-            Text(
-              name,
-              style: _getOverflowMenuElementTextStyle(isSelected),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAudioTracksSelectionWidget() {
-    final List<BetterPlayerHlsAudioTrack>? tracks =
-        betterPlayerController!.betterPlayerAudioTracks;
-    final List<Widget> children = [];
-    final BetterPlayerHlsAudioTrack? selectedAudioTrack =
-        betterPlayerController!.betterPlayerAudioTrack;
-    if (tracks != null) {
-      for (var index = 0; index < tracks.length; index++) {
-        final bool isSelected =
-            selectedAudioTrack != null && selectedAudioTrack == tracks[index];
-        children.add(_buildAudioTrackRow(tracks[index], isSelected));
-      }
-    }
-
-    _showModalBottomSheet(children);
-  }
-
-  Widget _buildAudioTrackRow(
-      BetterPlayerHlsAudioTrack audioTrack, bool isSelected) {
-    return BetterPlayerMaterialClickableWidget(
-      onTap: () {
-        Navigator.of(context).pop();
-        betterPlayerController!.setAudioTrack(audioTrack);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        child: Row(
-          children: [
-            const SizedBox(width: 16),
-            Text(
-              audioTrack.label!,
-              style: _getOverflowMenuElementTextStyle(isSelected),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  TextStyle _getOverflowMenuElementTextStyle(bool isSelected) {
-    return TextStyle(
-      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      color: betterPlayerControlsConfiguration.overflowModalTextColor,
-    );
-  }
-
-  void _showModalBottomSheet(List<Widget> children) {
-    showModalBottomSheet<void>(
-      backgroundColor: betterPlayerControlsConfiguration.overflowModalColor,
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          top: false,
-          child: SingleChildScrollView(
-            child: Column(
-              children: children,
-            ),
-          ),
-        );
-      },
-    );
-  }
 }

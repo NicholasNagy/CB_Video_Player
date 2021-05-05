@@ -9,17 +9,13 @@ import 'package:better_player/src/hls/better_player_hls_audio_track.dart';
 // Project imports:
 import 'package:better_player/src/hls/better_player_hls_track.dart';
 import 'package:better_player/src/hls/hls_parser/hls_master_playlist.dart';
-import 'package:better_player/src/hls/hls_parser/hls_media_playlist.dart';
 import 'package:better_player/src/hls/hls_parser/hls_playlist_parser.dart';
 import 'package:better_player/src/hls/hls_parser/rendition.dart';
-import 'package:better_player/src/hls/hls_parser/segment.dart';
 
 ///HLS helper class
 class BetterPlayerHlsUtils {
   static final HttpClient _httpClient = HttpClient()
     ..connectionTimeout = const Duration(seconds: 5);
-  static final HlsPlaylistParser _hlsPlaylistParser =
-      HlsPlaylistParser.create();
 
   static Future<List<BetterPlayerHlsTrack>> parseTracks(
       String data, String masterPlaylistUrl) async {
