@@ -18,8 +18,6 @@ import 'package:better_player/src/core/better_player_utils.dart';
 import 'package:better_player/src/hls/better_player_hls_audio_track.dart';
 import 'package:better_player/src/hls/better_player_hls_track.dart';
 import 'package:better_player/src/hls/better_player_hls_utils.dart';
-import 'package:better_player/src/subtitles/better_player_subtitle.dart';
-import 'package:better_player/src/subtitles/better_player_subtitles_factory.dart';
 import 'package:better_player/src/video_player/video_player.dart';
 import 'package:better_player/src/video_player/video_player_platform_interface.dart';
 import 'package:collection/collection.dart' show IterableExtension;
@@ -77,21 +75,6 @@ class BetterPlayerController {
 
   ///Currently used data source in player.
   BetterPlayerDataSource? get betterPlayerDataSource => _betterPlayerDataSource;
-
-  ///List of BetterPlayerSubtitlesSources.
-  final List<BetterPlayerSubtitlesSource> _betterPlayerSubtitlesSourceList = [];
-
-  ///List of BetterPlayerSubtitlesSources.
-  List<BetterPlayerSubtitlesSource> get betterPlayerSubtitlesSourceList =>
-      _betterPlayerSubtitlesSourceList;
-  BetterPlayerSubtitlesSource? _betterPlayerSubtitlesSource;
-
-  ///Currently used subtitles source.
-  BetterPlayerSubtitlesSource? get betterPlayerSubtitlesSource =>
-      _betterPlayerSubtitlesSource;
-
-  ///Subtitles lines for current data source.
-  List<BetterPlayerSubtitle> subtitlesLines = [];
 
   ///List of tracks available for current data source. Used only for HLS.
   List<BetterPlayerHlsTrack> _betterPlayerTracks = [];
@@ -255,7 +238,7 @@ class BetterPlayerController {
       betterPlayerDataSource.videoFormat == BetterPlayerVideoFormat.hls;
 
   ///Configure HLS data source based on provided data source and configuration.
-  ///This method configures tracks, subtitles and audio tracks from given
+  ///This method configures tracks, and audio tracks from given
   ///master playlist.
   Future _setupHlsDataSource() async {
     final String? hlsData = await BetterPlayerHlsUtils.getDataFromUrl(

@@ -6,9 +6,6 @@ enum BetterPlayerControllerEvent {
   ///Fullscreen mode has ended.
   hideFullscreen,
 
-  ///Subtitles changed.
-  changeSubtitles,
-
   ///New data source has been set.
   setupDataSource,
 

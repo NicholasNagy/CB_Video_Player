@@ -13,7 +13,6 @@ enum BetterPlayerEventType {
   controlsVisible,
   controlsHidden,
   setSpeed,
-  changedSubtitles,
   changedTrack,
   changedPlayerVisibility,
   changedResolution,

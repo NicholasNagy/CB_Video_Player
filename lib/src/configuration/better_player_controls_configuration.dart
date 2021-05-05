@@ -101,15 +101,12 @@ class BetterPlayerControlsConfiguration {
   ///Live text color;
   final Color liveTextColor;
 
-  ///Flag used to show/hide overflow menu which contains playback, subtitles,
+  ///Flag used to show/hide overflow menu which contains playback,
   ///qualities options.
   final bool enableOverflowMenu;
 
   ///Flag used to show/hide playback speed
   final bool enablePlaybackSpeed;
-
-  ///Flag used to show/hide subtitles
-  final bool enableSubtitles;
 
   ///Flag used to show/hide qualities
   final bool enableQualities;
@@ -134,9 +131,6 @@ class BetterPlayerControlsConfiguration {
 
   ///Icon of the playback speed menu item from overflow menu
   final IconData playbackSpeedIcon;
-
-  ///Icon of the subtitles menu item from overflow menu
-  final IconData subtitlesIcon;
 
   ///Icon of the qualities menu item from overflow menu
   final IconData qualitiesIcon;
@@ -201,7 +195,6 @@ class BetterPlayerControlsConfiguration {
       this.liveTextColor = Colors.red,
       this.enableOverflowMenu = true,
       this.enablePlaybackSpeed = true,
-      this.enableSubtitles = true,
       this.enableQualities = true,
       this.enablePip = true,
       this.enableRetry = true,
@@ -210,7 +203,6 @@ class BetterPlayerControlsConfiguration {
       this.pipMenuIcon = Icons.picture_in_picture,
       this.playbackSpeedIcon = Icons.shutter_speed,
       this.qualitiesIcon = Icons.hd,
-      this.subtitlesIcon = Icons.text_fields,
       this.audioTracksIcon = Icons.audiotrack,
       this.overflowMenuIconsColor = Colors.black,
       this.forwardSkipTimeInMilliseconds = 15000,

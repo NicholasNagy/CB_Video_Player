@@ -76,13 +76,6 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
                 Navigator.of(context).pop();
                 _showSpeedChooserWidget();
               }),
-            if (betterPlayerControlsConfiguration.enableSubtitles)
-              _buildMoreOptionsListRow(
-                  betterPlayerControlsConfiguration.subtitlesIcon,
-                  translations.overflowMenuSubtitles, () {
-                Navigator.of(context).pop();
-                _showSubtitlesSelectionWidget();
-              }),
             if (betterPlayerControlsConfiguration.enableQualities)
               _buildMoreOptionsListRow(
                   betterPlayerControlsConfiguration.qualitiesIcon,
@@ -200,50 +193,6 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
       }
     }
     return false;
-  }
-
-  void _showSubtitlesSelectionWidget() {
-    final subtitles =
-        List.of(betterPlayerController!.betterPlayerSubtitlesSourceList);
-    final noneSubtitlesElementExists = subtitles.firstWhereOrNull(
-            (source) => source.type == BetterPlayerSubtitlesSourceType.none) !=
-        null;
-    if (!noneSubtitlesElementExists) {
-      subtitles.add(BetterPlayerSubtitlesSource(
-          type: BetterPlayerSubtitlesSourceType.none));
-    }
-
-    _showModalBottomSheet(
-        subtitles.map((source) => _buildSubtitlesSourceRow(source)).toList());
-  }
-
-  Widget _buildSubtitlesSourceRow(BetterPlayerSubtitlesSource subtitlesSource) {
-    final selectedSourceType =
-        betterPlayerController!.betterPlayerSubtitlesSource;
-    final bool isSelected = (subtitlesSource == selectedSourceType) ||
-        (subtitlesSource.type == BetterPlayerSubtitlesSourceType.none &&
-            subtitlesSource.type == selectedSourceType!.type);
-
-    return BetterPlayerMaterialClickableWidget(
-      onTap: () {
-        Navigator.of(context).pop();
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        child: Row(
-          children: [
-            const SizedBox(width: 16),
-            Text(
-              subtitlesSource.type == BetterPlayerSubtitlesSourceType.none
-                  ? betterPlayerController!.translations.generalNone
-                  : subtitlesSource.name ??
-                      betterPlayerController!.translations.generalDefault,
-              style: _getOverflowMenuElementTextStyle(isSelected),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   ///Build both track and resolution selection
