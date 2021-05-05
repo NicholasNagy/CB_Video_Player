@@ -6,7 +6,6 @@ class Variant {
     required this.format,
     required this.videoGroupId,
     required this.audioGroupId,
-    required this.subtitleGroupId,
     required this.captionGroupId,
   });
 
@@ -22,9 +21,6 @@ class Variant {
   /// The audio rendition group referenced by this variant, or {@code null}.
   final String? audioGroupId;
 
-  /// The subtitle rendition group referenced by this variant, or {@code null}.
-  final String? subtitleGroupId;
-
   /// The caption rendition group referenced by this variant, or {@code null}.
   final String? captionGroupId;
 
@@ -34,7 +30,6 @@ class Variant {
         format: format,
         videoGroupId: videoGroupId,
         audioGroupId: audioGroupId,
-        subtitleGroupId: subtitleGroupId,
         captionGroupId: captionGroupId,
       );
 }

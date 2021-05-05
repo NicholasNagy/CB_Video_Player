@@ -7,7 +7,6 @@ import 'package:better_player/src/core/better_player_utils.dart';
 import 'package:better_player/src/hls/better_player_hls_audio_track.dart';
 
 // Project imports:
-import 'package:better_player/src/hls/better_player_hls_subtitle.dart';
 import 'package:better_player/src/hls/better_player_hls_track.dart';
 import 'package:better_player/src/hls/hls_parser/hls_master_playlist.dart';
 import 'package:better_player/src/hls/hls_parser/hls_media_playlist.dart';
@@ -44,62 +43,6 @@ class BetterPlayerHlsUtils {
       BetterPlayerUtils.log("Exception on parseSubtitles: $exception");
     }
     return tracks;
-  }
-
-  ///Parse subtitles from provided m3u8 url
-  static Future<List<BetterPlayerHlsSubtitle>> parseSubtitles(
-      String data, String masterPlaylistUrl) async {
-    final List<BetterPlayerHlsSubtitle> subtitles = [];
-    try {
-      final parsedPlaylist = await HlsPlaylistParser.create()
-          .parseString(Uri.parse(masterPlaylistUrl), data);
-      if (parsedPlaylist is HlsMasterPlaylist) {
-        for (final Rendition element in parsedPlaylist.subtitles) {
-          final hlsSubtitle = await _parseSubtitlesPlaylist(element);
-          if (hlsSubtitle != null) {
-            subtitles.add(hlsSubtitle);
-          }
-        }
-      }
-    } catch (exception) {
-      BetterPlayerUtils.log("Exception on parseSubtitles: $exception");
-    }
-
-    return subtitles;
-  }
-
-  static Future<BetterPlayerHlsSubtitle?> _parseSubtitlesPlaylist(
-      Rendition rendition) async {
-    try {
-      final subtitleData = await getDataFromUrl(rendition.url.toString());
-      if (subtitleData == null) {
-        return null;
-      }
-
-      final parsedSubtitle =
-          await _hlsPlaylistParser.parseString(rendition.url, subtitleData);
-      final hlsMediaPlaylist = parsedSubtitle as HlsMediaPlaylist;
-      final hlsSubtitlesUrls = <String>[];
-
-      for (final Segment segment in hlsMediaPlaylist.segments) {
-        final split = rendition.url.toString().split("/");
-        var realUrl = "";
-        for (var index = 0; index < split.length - 1; index++) {
-          // ignore: use_string_buffers
-          realUrl += "${split[index]}/";
-        }
-        realUrl += segment.url!;
-        hlsSubtitlesUrls.add(realUrl);
-      }
-      return BetterPlayerHlsSubtitle(
-          name: rendition.format.label,
-          language: rendition.format.language,
-          url: rendition.url.toString(),
-          realUrls: hlsSubtitlesUrls);
-    } catch (exception) {
-      BetterPlayerUtils.log("Failed to process subtitles playlist: $exception");
-      return null;
-    }
   }
 
   static Future<List<BetterPlayerHlsAudioTrack>> parseLanguages(

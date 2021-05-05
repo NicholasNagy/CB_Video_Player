@@ -50,7 +50,6 @@ class HlsPlaylistParser {
   static const String tagGap = '#EXT-X-GAP';
   static const String typeAudio = 'AUDIO';
   static const String typeVideo = 'VIDEO';
-  static const String typeSubtitles = 'SUBTITLES';
   static const String typeClosedCaptions = 'CLOSED-CAPTIONS';
   static const String methodNone = 'NONE';
   static const String methodAes128 = 'AES-128';
@@ -68,7 +67,6 @@ class HlsPlaylistParser {
   static const String regexpAverageBandwidth = 'AVERAGE-BANDWIDTH=(\\d+)\\b';
   static const String regexpVideo = 'VIDEO="(.+?)"';
   static const String regexpAudio = 'AUDIO="(.+?)"';
-  static const String regexpSubtitles = 'SUBTITLES="(.+?)"';
   static const String regexpClosedCaptions = 'CLOSED-CAPTIONS="(.+?)"';
   static const String regexpBandwidth = '[^-]BANDWIDTH=(\\d+)\\b';
   static const String regexpChannels = 'CHANNELS="(.+?)"';
@@ -91,7 +89,7 @@ class HlsPlaylistParser {
   static const String regexpUri = 'URI="(.+?)"';
   static const String regexpIv = 'IV=([^,.*]+)';
   static const String regexpType =
-      'TYPE=($typeAudio|$typeVideo|$typeSubtitles|$typeClosedCaptions)';
+      'TYPE=($typeAudio|$typeVideo|$typeClosedCaptions)';
   static const String regexpLanguage = 'LANGUAGE="(.+?)"';
   static const String regexpName = 'NAME="(.+?)"';
   static const String regexpGroupId = 'GROUP-ID="(.+?)"';
@@ -185,7 +183,6 @@ class HlsPlaylistParser {
     final List<Variant> variants = []; // ignore: always_specify_types
     final List<Rendition> videos = []; // ignore: always_specify_types
     final List<Rendition> audios = []; // ignore: always_specify_types
-    final List<Rendition> subtitles = []; // ignore: always_specify_types
     final List<Rendition> closedCaptions = []; // ignore: always_specify_types
     final Map<Uri, List<VariantInfo>> urlToVariantInfos =
         {}; // ignore: always_specify_types
@@ -291,10 +288,6 @@ class HlsPlaylistParser {
             source: line,
             pattern: regexpAudio,
             variableDefinitions: variableDefinitions);
-        final String? subtitlesGroupId = _parseStringAttr(
-            source: line,
-            pattern: regexpSubtitles,
-            variableDefinitions: variableDefinitions);
         final String? closedCaptionsGroupId = _parseStringAttr(
             source: line,
             pattern: regexpClosedCaptions,
@@ -322,7 +315,6 @@ class HlsPlaylistParser {
           format: format,
           videoGroupId: videoGroupId,
           audioGroupId: audioGroupId,
-          subtitleGroupId: subtitlesGroupId,
           captionGroupId: closedCaptionsGroupId,
         ));
 
@@ -336,7 +328,6 @@ class HlsPlaylistParser {
           bitrate: bitrate != 0 ? bitrate : averageBitrate,
           videoGroupId: videoGroupId,
           audioGroupId: audioGroupId,
-          subtitleGroupId: subtitlesGroupId,
           captionGroupId: closedCaptionsGroupId,
         ));
       }
@@ -470,25 +461,6 @@ class HlsPlaylistParser {
             }
             break;
           }
-        case typeSubtitles:
-          {
-            final Format format = Format(
-                    id: formatId,
-                    label: name,
-                    containerMimeType: MimeTypes.applicationM3u8,
-                    sampleMimeType: MimeTypes.textVtt,
-                    selectionFlags: selectionFlags,
-                    roleFlags: roleFlags,
-                    language: language)
-                .copyWithMetadata(metadata);
-            subtitles.add(Rendition(
-              url: uri,
-              format: format,
-              groupId: groupId,
-              name: name,
-            ));
-            break;
-          }
         case typeClosedCaptions:
           {
             final String instreamId = _parseStringAttr(
@@ -532,7 +504,6 @@ class HlsPlaylistParser {
         variants: deduplicatedVariants,
         videos: videos,
         audios: audios,
-        subtitles: subtitles,
         closedCaptions: closedCaptions,
         muxedAudioFormat: muxedAudioFormat,
         muxedCaptionFormats: muxedCaptionFormats,

@@ -5,7 +5,6 @@ class VariantInfo {
     this.bitrate,
     this.videoGroupId,
     this.audioGroupId,
-    this.subtitleGroupId,
     this.captionGroupId,
   });
 
@@ -20,10 +19,6 @@ class VariantInfo {
   /// present.
   final String? audioGroupId;
 
-  /// The SUBTITLES value as defined in the EXT-X-STREAM-INF tag, or null if the SUBTITLES
-  /// attribute is not present.
-  final String? subtitleGroupId;
-
   /// The CLOSED-CAPTIONS value as defined in the EXT-X-STREAM-INF tag, or null if the
   /// CLOSED-CAPTIONS attribute is not present.
   final String? captionGroupId;
@@ -34,7 +29,6 @@ class VariantInfo {
       return other.bitrate == bitrate &&
           other.videoGroupId == videoGroupId &&
           other.audioGroupId == audioGroupId &&
-          other.subtitleGroupId == subtitleGroupId &&
           other.captionGroupId == captionGroupId;
     }
     return false;
@@ -42,5 +36,5 @@ class VariantInfo {
 
   @override
   int get hashCode => hashValues(
-      bitrate, videoGroupId, audioGroupId, subtitleGroupId, captionGroupId);
+      bitrate, videoGroupId, audioGroupId, captionGroupId);
 }

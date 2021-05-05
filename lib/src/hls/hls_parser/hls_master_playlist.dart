@@ -11,7 +11,6 @@ class HlsMasterPlaylist extends HlsPlaylist {
     this.variants = const [], // ignore: always_specify_types
     this.videos = const [], // ignore: always_specify_types
     this.audios = const [], // ignore: always_specify_types
-    this.subtitles = const [], // ignore: always_specify_types
     this.closedCaptions = const [], // ignore: always_specify_types
     this.muxedAudioFormat,
     this.muxedCaptionFormats = const [], // ignore: always_specify_types
@@ -19,7 +18,7 @@ class HlsMasterPlaylist extends HlsPlaylist {
     this.variableDefinitions = const {}, // ignore: always_specify_types
     this.sessionKeyDrmInitData = const [], // ignore: always_specify_types
   })  : mediaPlaylistUrls = _getMediaPlaylistUrls(
-            variants, [videos, audios, subtitles, closedCaptions]),
+            variants, [videos, audios, closedCaptions]),
         // ignore: always_specify_types
         super(
             baseUri: baseUri,
@@ -37,9 +36,6 @@ class HlsMasterPlaylist extends HlsPlaylist {
 
   /// The audio renditions declared by the playlist.
   final List<Rendition> audios;
-
-  /// The subtitle renditions declared by the playlist.
-  final List<Rendition> subtitles;
 
   /// The closed caption renditions declared by the playlist.
   final List<Rendition> closedCaptions;
