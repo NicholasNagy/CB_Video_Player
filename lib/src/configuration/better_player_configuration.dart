@@ -2,7 +2,6 @@
 // Project imports:
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'better_player_event.dart';
 

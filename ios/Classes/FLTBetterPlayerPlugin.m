@@ -193,6 +193,9 @@ API_AVAILABLE(ios(9.0))
             [ self removeObservers];
             
         }
+        [_player pause];
+        _isPlaying = false;
+        _displayLink.paused = YES;
     }
 }
 
