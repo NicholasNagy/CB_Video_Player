@@ -869,7 +869,8 @@ NSMutableDictionary*  _artworkImageDict;
 }
 
 - (void) setRemoteCommandsNotificationNotActive{
-    [[AVAudioSession sharedInstance] setActive:false error:nil];
+    // TODO: figure out how to handle closing AudioSession
+    // [[AVAudioSession sharedInstance] setActive:false error:nil];
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 }
 
@@ -1079,6 +1080,7 @@ NSMutableDictionary*  _artworkImageDict;
             }
             result(nil);
         } else if ([@"dispose" isEqualToString:call.method]) {
+            [player clear];
             [self disposeNotificationData:player];
             [self setRemoteCommandsNotificationNotActive];
             [_registry unregisterTexture:textureId];
@@ -1099,7 +1101,8 @@ NSMutableDictionary*  _artworkImageDict;
                     [player dispose];
                 }
             });
-            [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+            // TODO: Figure out what to do to disactivated AVAudioSession
+            // [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
             result(nil);
         } else if ([@"setLooping" isEqualToString:call.method]) {
             [player setIsLooping:[argsMap[@"looping"] boolValue]];
