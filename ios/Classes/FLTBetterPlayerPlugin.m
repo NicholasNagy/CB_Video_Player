@@ -1207,9 +1207,7 @@ NSMutableDictionary*  _artworkImageDict;
         } else if ([@"pause" isEqualToString:call.method]) {
             [player pause];
             result(nil);
-        } else if ([@"setSpeed" isEqualToString:call.method]) {
-            [player setSpeed:[[argsMap objectForKey:@"speed"] doubleValue] result:result];
-        }else if ([@"setTrackParameters" isEqualToString:call.method]) {
+        } else if ([@"setTrackParameters" isEqualToString:call.method]) {
             int width = [argsMap[@"width"] intValue];
             int height = [argsMap[@"height"] intValue];
             int bitrate = [argsMap[@"bitrate"] intValue];

@@ -12,7 +12,6 @@ enum BetterPlayerEventType {
   exception,
   controlsVisible,
   controlsHidden,
-  setSpeed,
   changedTrack,
   changedPlayerVisibility,
   changedResolution,

@@ -30,7 +30,6 @@ class BetterPlayerController {
   static const String _durationParameter = "duration";
   static const String _progressParameter = "progress";
   static const String _volumeParameter = "volume";
-  static const String _speedParameter = "speed";
   static const String _dataSourceParameter = "dataSource";
   static const String _hlsExtension = "m3u8";
   static const String _authorizationHeader = "Authorization";
@@ -396,14 +395,6 @@ class BetterPlayerController {
     }
   }
 
-  ///Method which is invoked when full screen changes.
-  Future<void> _onFullScreenStateChanged() async {
-    if (videoPlayerController?.value.isPlaying == true && !_isFullScreen) {
-      enterFullScreen();
-      videoPlayerController?.removeListener(_onFullScreenStateChanged);
-    }
-  }
-
   ///Enables full screen mode in player. This will trigger route change.
   void enterFullScreen() {
     _isFullScreen = true;
@@ -492,25 +483,6 @@ class BetterPlayerController {
     await videoPlayerController!.setVolume(volume);
     _postEvent(BetterPlayerEvent(BetterPlayerEventType.setVolume,
         parameters: <String, dynamic>{_volumeParameter: volume}));
-  }
-
-  ///Set playback speed of video. Allows to set speed value between 0 and 2.
-  Future<void> setSpeed(double speed) async {
-    if (speed < 0 || speed > 2) {
-      throw ArgumentError("Speed must be between 0 and 2");
-    }
-    if (videoPlayerController == null) {
-      throw StateError("The data source has not been initialized");
-    }
-    await videoPlayerController?.setSpeed(speed);
-    _postEvent(
-      BetterPlayerEvent(
-        BetterPlayerEventType.setSpeed,
-        parameters: <String, dynamic>{
-          _speedParameter: speed,
-        },
-      ),
-    );
   }
 
   ///Flag which determines whenever player is playing or not.
@@ -960,7 +932,6 @@ class BetterPlayerController {
     if (!_disposed) {
       if (videoPlayerController != null) {
         pause();
-        videoPlayerController!.removeListener(_onFullScreenStateChanged);
         videoPlayerController!.removeListener(_onVideoPlayerChanged);
         videoPlayerController!.dispose();
       }
