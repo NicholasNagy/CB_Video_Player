@@ -76,11 +76,8 @@ class _BetterPlayerCupertinoControlsState
     final iconColor = _controlsConfiguration.iconsColor;
     _betterPlayerController = BetterPlayerController.of(context);
     _controller = _betterPlayerController!.videoPlayerController;
-    final orientation = MediaQuery.of(context).orientation;
-    final barHeight = orientation == Orientation.portrait
-        ? _controlsConfiguration.controlBarHeight
-        : _controlsConfiguration.controlBarHeight + 17;
-    final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
+    final barHeight = _controlsConfiguration.controlBarHeight;
+    final buttonPadding = 16.0;
     _wasLoading = isLoading(_latestValue);
     return GestureDetector(
       onTap: () {
