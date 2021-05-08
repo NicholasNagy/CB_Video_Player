@@ -55,9 +55,6 @@ class BetterPlayerController {
   Function(BetterPlayerEvent)? get eventListener =>
       betterPlayerConfiguration.eventListener;
 
-  ///Time when last progress event was sent
-  int _lastPositionSelection = 0;
-
   ///Currently used data source in player.
   BetterPlayerDataSource? _betterPlayerDataSource;
 
@@ -91,9 +88,6 @@ class BetterPlayerController {
 
   ///Has current data source started
   bool _hasCurrentDataSourceStarted = false;
-
-  ///Has current data source initialized
-  bool _hasCurrentDataSourceInitialized = false;
 
   ///Stream which sends flag whenever visibility of controls changes
   Stream<bool> get controlsVisibilityStream =>
@@ -177,13 +171,11 @@ class BetterPlayerController {
         }));
     _postControllerEvent(BetterPlayerControllerEvent.setupDataSource);
     _hasCurrentDataSourceStarted = false;
-    _hasCurrentDataSourceInitialized = false;
     _betterPlayerDataSource = betterPlayerDataSource;
 
     ///Build videoPlayerController if null
     if (videoPlayerController == null) {
       videoPlayerController = VideoPlayerController();
-      videoPlayerController?.addListener(_onVideoPlayerChanged);
     }
 
     ///Clear hls tracks
@@ -485,44 +477,6 @@ class BetterPlayerController {
     }
   }
 
-  ///Listener used to handle video player changes.
-  void _onVideoPlayerChanged() async {
-    final VideoPlayerValue currentVideoPlayerValue =
-        videoPlayerController?.value ??
-            VideoPlayerValue(duration: const Duration());
-
-    if (currentVideoPlayerValue.hasError) {
-      _videoPlayerValueOnError ??= currentVideoPlayerValue;
-      _postEvent(
-        BetterPlayerEvent(
-          BetterPlayerEventType.exception,
-          parameters: <String, dynamic>{
-            "exception": currentVideoPlayerValue.errorDescription
-          },
-        ),
-      );
-    }
-    if (currentVideoPlayerValue.initialized &&
-        !_hasCurrentDataSourceInitialized) {
-      _hasCurrentDataSourceInitialized = true;
-      _postEvent(BetterPlayerEvent(BetterPlayerEventType.initialized));
-    }
-
-    final int now = DateTime.now().millisecondsSinceEpoch;
-    if (now - _lastPositionSelection > 500) {
-      _lastPositionSelection = now;
-      _postEvent(
-        BetterPlayerEvent(
-          BetterPlayerEventType.progress,
-          parameters: <String, dynamic>{
-            _progressParameter: currentVideoPlayerValue.position,
-            _durationParameter: currentVideoPlayerValue.duration
-          },
-        ),
-      );
-    }
-  }
-
   ///Add event listener which listens to player events.
   void addEventsListener(Function(BetterPlayerEvent) eventListener) {
     _eventListeners.add(eventListener);
@@ -792,7 +746,6 @@ class BetterPlayerController {
     if (!_disposed) {
       if (videoPlayerController != null) {
         pause();
-        videoPlayerController!.removeListener(_onVideoPlayerChanged);
         videoPlayerController!.dispose();
       }
       _eventListeners.clear();

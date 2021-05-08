@@ -49,9 +49,6 @@ class BetterPlayer extends StatefulWidget {
 
 class _BetterPlayerState extends State<BetterPlayer>
     with WidgetsBindingObserver {
-  BetterPlayerConfiguration get _betterPlayerConfiguration =>
-      widget.controller.betterPlayerConfiguration;
-
   ///Flag which determines if widget has initialized
   bool _initialized = false;
 
