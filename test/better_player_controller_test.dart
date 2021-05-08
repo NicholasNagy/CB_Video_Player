@@ -61,12 +61,11 @@ void main() {
       test("BetterPlayerController - full screen and auto play should work",
           () async {
         final BetterPlayerMockController betterPlayerMockController =
-            BetterPlayerMockController(const BetterPlayerConfiguration(
-                fullScreenByDefault: true, autoPlay: true));
+            BetterPlayerMockController(
+                const BetterPlayerConfiguration(autoPlay: true));
         await betterPlayerMockController.setupDataSource(
             BetterPlayerDataSource.network(
                 BetterPlayerTestUtils.forBiggerBlazesUrl));
-        expect(betterPlayerMockController.isFullScreen, true);
         expect(betterPlayerMockController.isPlaying(), true);
       });
     },

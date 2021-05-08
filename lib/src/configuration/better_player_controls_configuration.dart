@@ -34,20 +34,11 @@ class BetterPlayerControlsConfiguration {
   ///Icon of unmute
   final IconData unMuteIcon;
 
-  ///Icon of fullscreen mode enable
-  final IconData fullscreenEnableIcon;
-
-  ///Icon of fullscreen mode disable
-  final IconData fullscreenDisableIcon;
-
   ///Cupertino only icon, icon of skip
   final IconData skipBackIcon;
 
   ///Cupertino only icon, icon of forward
   final IconData skipForwardIcon;
-
-  ///Flag used to enable/disable fullscreen
-  final bool enableFullscreen;
 
   ///Flag used to enable/disable mute
   final bool enableMute;
@@ -164,11 +155,8 @@ class BetterPlayerControlsConfiguration {
       this.pauseIcon = Icons.pause,
       this.muteIcon = Icons.volume_up,
       this.unMuteIcon = Icons.volume_mute,
-      this.fullscreenEnableIcon = Icons.fullscreen,
-      this.fullscreenDisableIcon = Icons.fullscreen_exit,
       this.skipBackIcon = Icons.fast_rewind,
       this.skipForwardIcon = Icons.fast_forward,
-      this.enableFullscreen = true,
       this.enableMute = true,
       this.enableProgressText = true,
       this.enableProgressBar = true,
@@ -218,8 +206,6 @@ class BetterPlayerControlsConfiguration {
 
   factory BetterPlayerControlsConfiguration.cupertino() {
     return const BetterPlayerControlsConfiguration(
-        fullscreenEnableIcon: CupertinoIcons.fullscreen,
-        fullscreenDisableIcon: CupertinoIcons.fullscreen_exit,
         playIcon: CupertinoIcons.play_arrow_solid,
         pauseIcon: CupertinoIcons.pause_solid);
   }

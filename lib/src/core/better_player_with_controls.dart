@@ -27,7 +27,6 @@ class BetterPlayerWithControls extends StatefulWidget {
 }
 
 class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
-
   BetterPlayerControlsConfiguration get controlsConfiguration =>
       widget.controller!.betterPlayerConfiguration.controlsConfiguration;
 
@@ -76,21 +75,7 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
     final BetterPlayerController betterPlayerController =
         BetterPlayerController.of(context);
 
-    double? aspectRatio;
-    if (betterPlayerController.isFullScreen) {
-      if (betterPlayerController
-          .betterPlayerConfiguration.autoDetectFullscreenDeviceOrientation) {
-        aspectRatio =
-            betterPlayerController.videoPlayerController?.value.aspectRatio ??
-                1.0;
-      } else {
-        aspectRatio = betterPlayerController
-                .betterPlayerConfiguration.fullScreenAspectRatio ??
-            BetterPlayerUtils.calculateAspectRatio(context);
-      }
-    } else {
-      aspectRatio = betterPlayerController.getAspectRatio();
-    }
+    double? aspectRatio = betterPlayerController.getAspectRatio();
 
     aspectRatio ??= 16 / 9;
 

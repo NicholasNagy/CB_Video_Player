@@ -45,24 +45,6 @@ class BetterPlayerConfiguration {
   /// A widget which is placed between the video and the controls
   final Widget? overlay;
 
-  /// Defines if the player will start in fullscreen when play is pressed
-  final bool fullScreenByDefault;
-
-  /// Defines if the player will sleep in fullscreen or not
-  final bool allowedScreenSleep;
-
-  /// Defines aspect ratio which will be used in fullscreen
-  final double? fullScreenAspectRatio;
-
-  /// Defines the set of allowed device orientations on entering fullscreen
-  final List<DeviceOrientation> deviceOrientationsOnFullScreen;
-
-  /// Defines the system overlays visible after exiting fullscreen
-  final List<SystemUiOverlay> systemOverlaysAfterFullScreen;
-
-  /// Defines the set of allowed device orientations after exiting fullscreen
-  final List<DeviceOrientation> deviceOrientationsAfterFullScreen;
-
   /// Defines a event listener where video player events will be send
   final Function(BetterPlayerEvent)? eventListener;
 
@@ -79,14 +61,6 @@ class BetterPlayerConfiguration {
 
   ///Defines function which will react on player visibility changed
   final Function(double visibilityFraction)? playerVisibilityChangedBehavior;
-
-  ///Defines if player should auto detect full screen device orientation based
-  ///on aspect ratio of the video. If aspect ratio of the video is < 1 then
-  ///video will played in full screen in portrait mode. If aspect ratio is >= 1
-  ///then video will be played horizontally. If this parameter is true, then
-  ///[deviceOrientationsOnFullScreen] and [fullScreenAspectRatio] value will be
-  /// ignored.
-  final bool autoDetectFullscreenDeviceOrientation;
 
   ///Defines flag which enables/disables lifecycle handling (pause on app closed,
   ///play on app resumed). Default value is true.
@@ -105,31 +79,16 @@ class BetterPlayerConfiguration {
     this.autoPlay = false,
     this.startAt,
     this.looping = false,
-    this.fullScreenByDefault = false,
     this.placeholder,
     this.showPlaceholderUntilPlay = false,
     this.placeholderOnTop = true,
     this.overlay,
     this.errorBuilder,
-    this.allowedScreenSleep = true,
-    this.fullScreenAspectRatio,
-    this.deviceOrientationsOnFullScreen = const [
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ],
-    this.systemOverlaysAfterFullScreen = SystemUiOverlay.values,
-    this.deviceOrientationsAfterFullScreen = const [
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ],
     this.eventListener,
     this.controlsConfiguration = const BetterPlayerControlsConfiguration(),
     this.fit = BoxFit.fill,
     this.rotation = 0,
     this.playerVisibilityChangedBehavior,
-    this.autoDetectFullscreenDeviceOrientation = false,
     this.handleLifecycle = true,
     this.autoDispose = true,
   });
@@ -139,46 +98,29 @@ class BetterPlayerConfiguration {
     bool? autoPlay,
     Duration? startAt,
     bool? looping,
-    bool? fullScreenByDefault,
     Widget? placeholder,
     bool? showPlaceholderUntilPlay,
     bool? placeholderOnTop,
     Widget? overlay,
     bool? showControlsOnInitialize,
     Widget Function(BuildContext context, String? errorMessage)? errorBuilder,
-    bool? allowedScreenSleep,
-    double? fullScreenAspectRatio,
-    List<DeviceOrientation>? deviceOrientationsOnFullScreen,
-    List<SystemUiOverlay>? systemOverlaysAfterFullScreen,
-    List<DeviceOrientation>? deviceOrientationsAfterFullScreen,
     Function(BetterPlayerEvent)? eventListener,
     BetterPlayerControlsConfiguration? controlsConfiguration,
     BoxFit? fit,
     double? rotation,
     Function(double visibilityFraction)? playerVisibilityChangedBehavior,
-    bool? autoDetectFullscreenDeviceOrientation,
   }) {
     return BetterPlayerConfiguration(
       aspectRatio: aspectRatio ?? this.aspectRatio,
       autoPlay: autoPlay ?? this.autoPlay,
       startAt: startAt ?? this.startAt,
       looping: looping ?? this.looping,
-      fullScreenByDefault: fullScreenByDefault ?? this.fullScreenByDefault,
       placeholder: placeholder ?? this.placeholder,
       showPlaceholderUntilPlay:
           showPlaceholderUntilPlay ?? this.showPlaceholderUntilPlay,
       placeholderOnTop: placeholderOnTop ?? this.placeholderOnTop,
       overlay: overlay ?? this.overlay,
       errorBuilder: errorBuilder ?? this.errorBuilder,
-      allowedScreenSleep: allowedScreenSleep ?? this.allowedScreenSleep,
-      fullScreenAspectRatio:
-          fullScreenAspectRatio ?? this.fullScreenAspectRatio,
-      deviceOrientationsOnFullScreen:
-          deviceOrientationsOnFullScreen ?? this.deviceOrientationsOnFullScreen,
-      systemOverlaysAfterFullScreen:
-          systemOverlaysAfterFullScreen ?? this.systemOverlaysAfterFullScreen,
-      deviceOrientationsAfterFullScreen: deviceOrientationsAfterFullScreen ??
-          this.deviceOrientationsAfterFullScreen,
       eventListener: eventListener ?? this.eventListener,
       controlsConfiguration:
           controlsConfiguration ?? this.controlsConfiguration,
@@ -186,9 +128,6 @@ class BetterPlayerConfiguration {
       rotation: rotation ?? this.rotation,
       playerVisibilityChangedBehavior: playerVisibilityChangedBehavior ??
           this.playerVisibilityChangedBehavior,
-      autoDetectFullscreenDeviceOrientation:
-          autoDetectFullscreenDeviceOrientation ??
-              this.autoDetectFullscreenDeviceOrientation,
     );
   }
 }
