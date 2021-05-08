@@ -63,9 +63,6 @@ class BetterPlayerConfiguration {
   /// Defines the set of allowed device orientations after exiting fullscreen
   final List<DeviceOrientation> deviceOrientationsAfterFullScreen;
 
-  /// Defines a custom RoutePageBuilder for the fullscreen
-  final BetterPlayerRoutePageBuilder? routePageBuilder;
-
   /// Defines a event listener where video player events will be send
   final Function(BetterPlayerEvent)? eventListener;
 
@@ -127,7 +124,6 @@ class BetterPlayerConfiguration {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ],
-    this.routePageBuilder,
     this.eventListener,
     this.controlsConfiguration = const BetterPlayerControlsConfiguration(),
     this.fit = BoxFit.fill,
@@ -155,7 +151,6 @@ class BetterPlayerConfiguration {
     List<DeviceOrientation>? deviceOrientationsOnFullScreen,
     List<SystemUiOverlay>? systemOverlaysAfterFullScreen,
     List<DeviceOrientation>? deviceOrientationsAfterFullScreen,
-    BetterPlayerRoutePageBuilder? routePageBuilder,
     Function(BetterPlayerEvent)? eventListener,
     BetterPlayerControlsConfiguration? controlsConfiguration,
     BoxFit? fit,
@@ -184,7 +179,6 @@ class BetterPlayerConfiguration {
           systemOverlaysAfterFullScreen ?? this.systemOverlaysAfterFullScreen,
       deviceOrientationsAfterFullScreen: deviceOrientationsAfterFullScreen ??
           this.deviceOrientationsAfterFullScreen,
-      routePageBuilder: routePageBuilder ?? this.routePageBuilder,
       eventListener: eventListener ?? this.eventListener,
       controlsConfiguration:
           controlsConfiguration ?? this.controlsConfiguration,
