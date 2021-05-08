@@ -39,7 +39,6 @@ class VideoPlayerValue {
     this.isBuffering = false,
     this.volume = 1.0,
     this.errorDescription,
-    this.isPip = false,
   });
 
   /// Returns an instance with a `null` [Duration].
@@ -88,9 +87,6 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size? size;
 
-  ///Is in Picture in Picture Mode
-  final bool isPip;
-
   /// Indicates whether or not the video has been loaded and is ready to play.
   bool get initialized => duration != null;
 
@@ -124,7 +120,6 @@ class VideoPlayerValue {
     bool? isBuffering,
     double? volume,
     String? errorDescription,
-    bool? isPip,
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -137,7 +132,6 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       errorDescription: errorDescription ?? this.errorDescription,
-      isPip: isPip ?? this.isPip,
     );
   }
 
@@ -237,12 +231,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           break;
         case VideoEventType.seek:
           seekTo(event.position);
-          break;
-        case VideoEventType.pipStart:
-          value = value.copyWith(isPip: true);
-          break;
-        case VideoEventType.pipStop:
-          value = value.copyWith(isPip: false);
           break;
         case VideoEventType.unknown:
           break;
@@ -530,26 +518,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         _textureId, width, height, bitrate);
   }
 
-  Future<void> enablePictureInPicture(
-      {double? top, double? left, double? width, double? height}) async {
-    await _videoPlayerPlatform.enablePictureInPicture(
-        textureId, top, left, width, height);
-  }
-
-  Future<void> disablePictureInPicture() async {
-    await _videoPlayerPlatform.disablePictureInPicture(textureId);
-  }
-
   void _updatePosition(Duration? position, {DateTime? absolutePosition}) {
     value = value.copyWith(position: position);
     value = value.copyWith(absolutePosition: absolutePosition);
-  }
-
-  Future<bool?> isPictureInPictureSupported() async {
-    if (_textureId == null) {
-      return false;
-    }
-    return _videoPlayerPlatform.isPictureInPictureEnabled(_textureId);
   }
 
   void refresh() {

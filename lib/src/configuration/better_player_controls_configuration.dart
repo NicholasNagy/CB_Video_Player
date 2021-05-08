@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 
 ///UI configuration of Better Player. Allows to change colors/icons/behavior
 ///of controls. Used in BetterPlayerConfiguration. Configuration applies only
-///for player displayed in app, not in notification or PiP mode.
+///for player displayed in app, not in notification.
 class BetterPlayerControlsConfiguration {
   ///Color of the control bars
   final Color controlBarColor;
@@ -99,9 +99,6 @@ class BetterPlayerControlsConfiguration {
   ///Flag used to show/hide qualities
   final bool enableQualities;
 
-  ///Flag used to show/hide PiP mode
-  final bool enablePip;
-
   ///Flag used to enable/disable retry feature
   final bool enableRetry;
 
@@ -113,9 +110,6 @@ class BetterPlayerControlsConfiguration {
 
   ///Icon of the overflow menu
   final IconData overflowMenuIcon;
-
-  ///Icon of the PiP menu
-  final IconData pipMenuIcon;
 
   ///Icon of the qualities menu item from overflow menu
   final IconData qualitiesIcon;
@@ -177,11 +171,9 @@ class BetterPlayerControlsConfiguration {
       this.liveTextColor = Colors.red,
       this.enableOverflowMenu = true,
       this.enableQualities = true,
-      this.enablePip = true,
       this.enableRetry = true,
       this.overflowMenuCustomItems = const [],
       this.overflowMenuIcon = Icons.more_vert,
-      this.pipMenuIcon = Icons.picture_in_picture,
       this.qualitiesIcon = Icons.hd,
       this.audioTracksIcon = Icons.audiotrack,
       this.overflowMenuIconsColor = Colors.black,

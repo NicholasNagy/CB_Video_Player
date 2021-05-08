@@ -114,18 +114,6 @@ class BetterPlayerController {
   ///in configuration.
   double? _overriddenAspectRatio;
 
-  ///Was Picture in Picture opened.
-  bool _wasInPipMode = false;
-
-  ///Was controls enabled before Picture in Picture opened.
-  bool _wasControlsEnabledBeforePiP = false;
-
-  ///GlobalKey of the BetterPlayer widget
-  GlobalKey? _betterPlayerGlobalKey;
-
-  ///Getter of the GlobalKey
-  GlobalKey? get betterPlayerGlobalKey => _betterPlayerGlobalKey;
-
   ///StreamSubscription for VideoEvent listener
   StreamSubscription<VideoEvent>? _videoEventStreamSubscription;
 
@@ -519,16 +507,6 @@ class BetterPlayerController {
       _hasCurrentDataSourceInitialized = true;
       _postEvent(BetterPlayerEvent(BetterPlayerEventType.initialized));
     }
-    if (currentVideoPlayerValue.isPip) {
-      _wasInPipMode = true;
-    } else if (_wasInPipMode) {
-      _postEvent(BetterPlayerEvent(BetterPlayerEventType.pipStop));
-      _wasInPipMode = false;
-      if (_wasControlsEnabledBeforePiP) {
-        setControlsEnabled(true);
-      }
-      videoPlayerController?.refresh();
-    }
 
     final int now = DateTime.now().millisecondsSinceEpoch;
     if (now - _lastPositionSelection > 500) {
@@ -674,80 +652,7 @@ class BetterPlayerController {
     return _overriddenAspectRatio ?? betterPlayerConfiguration.aspectRatio;
   }
 
-  ///Enable Picture in Picture (PiP) mode. [betterPlayerGlobalKey] is required
-  ///to open PiP mode in iOS. When device is not supported, PiP mode won't be
-  ///open.
-  Future<void>? enablePictureInPicture(GlobalKey betterPlayerGlobalKey) async {
-    if (videoPlayerController == null) {
-      throw StateError("The data source has not been initialized");
-    }
-
-    final bool isPipSupported =
-        (await videoPlayerController!.isPictureInPictureSupported()) ?? false;
-
-    if (isPipSupported) {
-      _wasControlsEnabledBeforePiP = _controlsEnabled;
-      setControlsEnabled(false);
-      if (Platform.isAndroid) {
-        await videoPlayerController?.enablePictureInPicture(
-            left: 0, top: 0, width: 0, height: 0);
-        _postEvent(BetterPlayerEvent(BetterPlayerEventType.pipStart));
-        return;
-      }
-      if (Platform.isIOS) {
-        final RenderBox? renderBox = betterPlayerGlobalKey.currentContext!
-            .findRenderObject() as RenderBox?;
-        if (renderBox == null) {
-          BetterPlayerUtils.log(
-              "Can't show PiP. RenderBox is null. Did you provide valid global"
-              " key?");
-          return;
-        }
-        final Offset position = renderBox.localToGlobal(Offset.zero);
-        return videoPlayerController?.enablePictureInPicture(
-          left: position.dx,
-          top: position.dy,
-          width: renderBox.size.width,
-          height: renderBox.size.height,
-        );
-      } else {
-        BetterPlayerUtils.log("Unsupported PiP in current platform.");
-      }
-    } else {
-      BetterPlayerUtils.log(
-          "Picture in picture is not supported in this device. If you're "
-          "using Android, please check if you're using activity v2 "
-          "embedding.");
-    }
-  }
-
-  ///Disable Picture in Picture mode if it's enabled.
-  Future<void>? disablePictureInPicture() {
-    if (videoPlayerController == null) {
-      throw StateError("The data source has not been initialized");
-    }
-    return videoPlayerController!.disablePictureInPicture();
-  }
-
-  // ignore: use_setters_to_change_properties
-  ///Set GlobalKey of BetterPlayer. Used in PiP methods called from controls.
-  void setBetterPlayerGlobalKey(GlobalKey betterPlayerGlobalKey) {
-    _betterPlayerGlobalKey = betterPlayerGlobalKey;
-  }
-
-  ///Check if picture in picture mode is supported in this device.
-  Future<bool> isPictureInPictureSupported() async {
-    if (videoPlayerController == null) {
-      throw StateError("The data source has not been initialized");
-    }
-
-    final bool isPipSupported =
-        (await videoPlayerController!.isPictureInPictureSupported()) ?? false;
-
-    return isPipSupported;
-  }
-
-  ///Handle VideoEvent when remote controls notification / PiP is shown
+  ///Handle VideoEvent when remote controls notification is shown
   void _handleVideoEvent(VideoEvent event) async {
     switch (event.eventType) {
       case VideoEventType.play:

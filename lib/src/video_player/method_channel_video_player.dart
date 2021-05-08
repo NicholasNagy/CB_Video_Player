@@ -194,41 +194,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> enablePictureInPicture(int? textureId, double? top, double? left,
-      double? width, double? height) async {
-    return _channel.invokeMethod<void>(
-      'enablePictureInPicture',
-      <String, dynamic>{
-        'textureId': textureId,
-        'top': top,
-        'left': left,
-        'width': width,
-        'height': height,
-      },
-    );
-  }
-
-  @override
-  Future<bool?> isPictureInPictureEnabled(int? textureId) {
-    return _channel.invokeMethod<bool>(
-      'isPictureInPictureSupported',
-      <String, dynamic>{
-        'textureId': textureId,
-      },
-    );
-  }
-
-  @override
-  Future<void> disablePictureInPicture(int? textureId) {
-    return _channel.invokeMethod<bool>(
-      'disablePictureInPicture',
-      <String, dynamic>{
-        'textureId': textureId,
-      },
-    );
-  }
-
-  @override
   Future<void> setAudioTrack(int? textureId, String? name, int? index) {
     return _channel.invokeMethod<void>(
       'setAudioTrack',
@@ -365,18 +330,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
             eventType: VideoEventType.seek,
             key: key,
             position: Duration(milliseconds: map['position'] as int),
-          );
-
-        case 'pipStart':
-          return VideoEvent(
-            eventType: VideoEventType.pipStart,
-            key: key,
-          );
-
-        case 'pipStop':
-          return VideoEvent(
-            eventType: VideoEventType.pipStop,
-            key: key,
           );
 
         default:
