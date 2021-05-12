@@ -5,7 +5,7 @@ class TheBetterPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BetterPlayerController ctl = BetterPlayerController(
-      BetterPlayerConfiguration(aspectRatio: 16 / 9, autoPlay: true),
+      BetterPlayerConfiguration(aspectRatio: 16 / 9, autoPlay: true, looping: true),
       betterPlayerDataSource: BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"),

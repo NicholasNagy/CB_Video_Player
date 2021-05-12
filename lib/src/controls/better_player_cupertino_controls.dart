@@ -36,7 +36,6 @@ class BetterPlayerCupertinoControls extends StatefulWidget {
 class _BetterPlayerCupertinoControlsState
     extends BetterPlayerControlsState<BetterPlayerCupertinoControls> {
   final marginSize = 5.0;
-  VideoPlayerValue? _latestValue;
   double? _latestVolume;
   bool _hideStuff = true;
   Timer? _hideTimer;
@@ -52,9 +51,6 @@ class _BetterPlayerCupertinoControlsState
       widget.controlsConfiguration;
 
   @override
-  VideoPlayerValue? get latestValue => _latestValue;
-
-  @override
   BetterPlayerController? get betterPlayerController => _betterPlayerController;
 
   @override
@@ -65,20 +61,12 @@ class _BetterPlayerCupertinoControlsState
   Widget build(BuildContext context) {
     _betterPlayerController = BetterPlayerController.of(context);
 
-    if (_latestValue?.hasError == true) {
-      return Container(
-        color: Colors.black,
-        child: _buildErrorWidget(),
-      );
-    }
-
     final backgroundColor = _controlsConfiguration.controlBarColor;
     final iconColor = _controlsConfiguration.iconsColor;
     _betterPlayerController = BetterPlayerController.of(context);
     _controller = _betterPlayerController!.videoPlayerController;
     final barHeight = _controlsConfiguration.controlBarHeight;
     final buttonPadding = 16.0;
-    _wasLoading = isLoading(_latestValue);
     return GestureDetector(
       onTap: () {
         _hideStuff
@@ -114,7 +102,6 @@ class _BetterPlayerCupertinoControlsState
   }
 
   void _dispose() {
-    _controller!.removeListener(_updateState);
     _hideTimer?.cancel();
     _expandCollapseTimer?.cancel();
     _initTimer?.cancel();
@@ -175,30 +162,18 @@ class _BetterPlayerCupertinoControlsState
                     )
                   : Row(
                       children: <Widget>[
-                        if (_controlsConfiguration.enableSkips)
-                          _buildSkipBack(iconColor, barHeight)
-                        else
-                          const SizedBox(),
+                        const SizedBox(),
                         if (_controlsConfiguration.enablePlayPause)
                           _buildPlayPause(_controller!, iconColor, barHeight)
                         else
                           const SizedBox(),
-                        if (_controlsConfiguration.enableSkips)
-                          _buildSkipForward(iconColor, barHeight)
-                        else
-                          const SizedBox(),
-                        if (_controlsConfiguration.enableProgressText)
-                          _buildPosition()
-                        else
-                          const SizedBox(),
+                        const SizedBox(),
+                        const SizedBox(),
                         if (_controlsConfiguration.enableProgressBar)
                           _buildProgressBar()
                         else
                           const SizedBox(),
-                        if (_controlsConfiguration.enableProgressText)
-                          _buildRemaining()
-                        else
-                          const SizedBox()
+                        const SizedBox()
                       ],
                     ),
             ),
@@ -211,73 +186,8 @@ class _BetterPlayerCupertinoControlsState
   Expanded _buildHitArea() {
     return Expanded(
       child: GestureDetector(
-        onTap: _latestValue != null && _latestValue!.isPlaying
-            ? () {
-                if (_hideStuff == true) {
-                  cancelAndRestartTimer();
-                } else {
-                  _hideTimer?.cancel();
-
-                  setState(() {
-                    _hideStuff = true;
-                  });
-                }
-              }
-            : () {
-                _hideTimer?.cancel();
-
-                setState(() {
-                  _hideStuff = false;
-                });
-              },
         child: Container(
           color: Colors.transparent,
-        ),
-      ),
-    );
-  }
-
-  GestureDetector _buildMuteButton(
-    VideoPlayerController? controller,
-    Color backgroundColor,
-    Color iconColor,
-    double barHeight,
-    double buttonPadding,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        cancelAndRestartTimer();
-
-        if (_latestValue!.volume == 0) {
-          controller!.setVolume(_latestVolume ?? 0.5);
-        } else {
-          _latestVolume = controller!.value.volume;
-          controller.setVolume(0.0);
-        }
-      },
-      child: AnimatedOpacity(
-        opacity: _hideStuff ? 0.0 : 1.0,
-        duration: _controlsConfiguration.controlsHideTime,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 10.0),
-            child: Container(
-              color: backgroundColor,
-              child: Container(
-                height: barHeight,
-                padding: EdgeInsets.symmetric(
-                  horizontal: buttonPadding,
-                ),
-                child: Icon(
-                  (_latestValue != null && _latestValue!.volume > 0)
-                      ? _controlsConfiguration.muteIcon
-                      : _controlsConfiguration.unMuteIcon,
-                  color: iconColor,
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -298,69 +208,6 @@ class _BetterPlayerCupertinoControlsState
           controller.value.isPlaying
               ? _controlsConfiguration.pauseIcon
               : _controlsConfiguration.playIcon,
-          color: iconColor,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPosition() {
-    final position =
-        _latestValue != null ? _latestValue!.position : const Duration();
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
-      child: Text(
-        BetterPlayerUtils.formatDuration(position),
-        style: TextStyle(
-          color: _controlsConfiguration.textColor,
-          fontSize: 12.0,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRemaining() {
-    final position = _latestValue != null && _latestValue!.duration != null
-        ? _latestValue!.duration! - _latestValue!.position
-        : const Duration();
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
-      child: Text(
-        '-${BetterPlayerUtils.formatDuration(position)}',
-        style:
-            TextStyle(color: _controlsConfiguration.textColor, fontSize: 12.0),
-      ),
-    );
-  }
-
-  GestureDetector _buildSkipBack(Color iconColor, double barHeight) {
-    return GestureDetector(
-      onTap: skipBack,
-      child: Container(
-        height: barHeight,
-        color: Colors.transparent,
-        margin: const EdgeInsets.only(left: 10.0),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Icon(
-          _controlsConfiguration.skipBackIcon,
-          color: iconColor,
-        ),
-      ),
-    );
-  }
-
-  GestureDetector _buildSkipForward(Color iconColor, double barHeight) {
-    return GestureDetector(
-      onTap: skipForward,
-      child: Container(
-        height: barHeight,
-        color: Colors.transparent,
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        margin: const EdgeInsets.only(right: 8.0),
-        child: Icon(
-          _controlsConfiguration.skipForwardIcon,
           color: iconColor,
         ),
       ),
@@ -389,11 +236,7 @@ class _BetterPlayerCupertinoControlsState
           const SizedBox(),
           const SizedBox(),
           Expanded(child: Container()),
-          if (_controlsConfiguration.enableMute)
-            _buildMuteButton(_controller, backgroundColor, iconColor, barHeight,
-                buttonPadding)
-          else
-            const SizedBox(),
+          const SizedBox(),
           const SizedBox(),
         ],
       ),
@@ -410,9 +253,6 @@ class _BetterPlayerCupertinoControlsState
   }
 
   Future<void> _initialize() async {
-    _controller!.addListener(_updateState);
-
-    _updateState();
 
     if ((_controller!.value.isPlaying) ||
         _betterPlayerController!.betterPlayerConfiguration.autoPlay) {
@@ -462,11 +302,6 @@ class _BetterPlayerCupertinoControlsState
   }
 
   void _onPlayPause() {
-    bool isFinished = false;
-
-    if (_latestValue?.position != null && _latestValue?.duration != null) {
-      isFinished = _latestValue!.position >= _latestValue!.duration!;
-    }
     setState(() {
       if (_controller!.value.isPlaying) {
         _hideStuff = false;
@@ -481,9 +316,6 @@ class _BetterPlayerCupertinoControlsState
             _betterPlayerController!.play();
           }
         } else {
-          if (isFinished) {
-            _betterPlayerController!.seekTo(const Duration());
-          }
           _betterPlayerController!.play();
         }
       }
@@ -499,22 +331,6 @@ class _BetterPlayerCupertinoControlsState
         _hideStuff = true;
       });
     });
-  }
-
-  void _updateState() {
-    if (mounted) {
-      if (!_hideStuff ||
-          isVideoFinished(_controller!.value) ||
-          _wasLoading ||
-          isLoading(_controller!.value)) {
-        setState(() {
-          _latestValue = _controller!.value;
-          if (isVideoFinished(_latestValue)) {
-            _hideStuff = false;
-          }
-        });
-      }
-    }
   }
 
   void _onPlayerHide() {
