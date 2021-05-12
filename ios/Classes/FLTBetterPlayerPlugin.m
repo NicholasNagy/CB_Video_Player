@@ -566,24 +566,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     return FLTCMTimeToMillis(time);
 }
 
-- (void)seekTo:(int)location {
-    ///When player is playing, pause video, seek to new position and start again. This will prevent issues with seekbar jumps.
-    bool wasPlaying = _isPlaying;
-    if (wasPlaying){
-        [_player pause];
-    }
-    
-    [_player seekToTime:CMTimeMake(location, 1000)
-        toleranceBefore:kCMTimeZero
-         toleranceAfter:kCMTimeZero
-      completionHandler:^(BOOL finished){
-        if (wasPlaying){
-            [self->_player play];
-        }
-    }];
-    
-}
-
 - (void)setIsLooping:(bool)isLooping {
     _isLooping = isLooping;
 }
@@ -911,11 +893,6 @@ NSMutableDictionary*  _artworkImageDict;
     if (@available(iOS 9.1, *)) {
         [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
             
-            MPChangePlaybackPositionCommandEvent * playbackEvent = (MPChangePlaybackRateCommandEvent * ) event;
-            CMTime time = CMTimeMake(playbackEvent.positionTime, 1);
-            int64_t millis = FLTCMTimeToMillis(time);
-            [player seekTo: millis];
-            player.eventSink(@{@"event" : @"seek", @"position": @(millis)});
             return MPRemoteCommandHandlerStatusSuccess;
         }];
         
@@ -1118,9 +1095,6 @@ NSMutableDictionary*  _artworkImageDict;
             result(@([player position]));
         } else if ([@"absolutePosition" isEqualToString:call.method]) {
             result(@([player absolutePosition]));
-        } else if ([@"seekTo" isEqualToString:call.method]) {
-            [player seekTo:[argsMap[@"location"] intValue]];
-            result(nil);
         } else if ([@"pause" isEqualToString:call.method]) {
             [player pause];
             result(nil);

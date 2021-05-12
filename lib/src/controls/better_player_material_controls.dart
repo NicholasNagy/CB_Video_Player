@@ -38,8 +38,6 @@ class BetterPlayerMaterialControls extends StatefulWidget {
 class _BetterPlayerMaterialControlsState
     extends BetterPlayerControlsState<BetterPlayerMaterialControls> {
   double? _latestVolume;
-  bool _hideStuff = true;
-  Timer? _hideTimer;
   Timer? _initTimer;
   Timer? _showAfterExpandCollapseTimer;
   bool _displayTapped = false;
@@ -61,19 +59,10 @@ class _BetterPlayerMaterialControlsState
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        _hideStuff
-            ? cancelAndRestartTimer()
-            : setState(() {
-                _hideStuff = true;
-              });
-      },
       onDoubleTap: () {
-        cancelAndRestartTimer();
         _onPlayPause();
       },
       child: AbsorbPointer(
-        absorbing: _hideStuff,
         child: Column(
           children: [
             _buildTopBar(),
@@ -92,7 +81,6 @@ class _BetterPlayerMaterialControlsState
   }
 
   void _dispose() {
-    _hideTimer?.cancel();
     _initTimer?.cancel();
     _showAfterExpandCollapseTimer?.cancel();
     _controlsVisibilityStreamSubscription?.cancel();
@@ -106,7 +94,6 @@ class _BetterPlayerMaterialControlsState
 
     if (_oldController != _betterPlayerController) {
       _dispose();
-      _initialize();
     }
 
     super.didChangeDependencies();
@@ -145,9 +132,8 @@ class _BetterPlayerMaterialControlsState
       const SizedBox(),
       if (_controlsConfiguration.enableOverflowMenu)
         AnimatedOpacity(
-          opacity: _hideStuff ? 0.0 : 1.0,
+          opacity: 1.0,
           duration: _controlsConfiguration.controlsHideTime,
-          onEnd: _onPlayerHide,
           child: Container(
             height: _controlsConfiguration.controlBarHeight,
           ),
@@ -162,9 +148,8 @@ class _BetterPlayerMaterialControlsState
       return const SizedBox();
     }
     return AnimatedOpacity(
-      opacity: _hideStuff ? 0.0 : 1.0,
+      opacity: 1.0,
       duration: _controlsConfiguration.controlsHideTime,
-      onEnd: _onPlayerHide,
       child: Container(
         height: _controlsConfiguration.controlBarHeight,
         color: _controlsConfiguration.controlBarColor,
@@ -208,69 +193,18 @@ class _BetterPlayerMaterialControlsState
     );
   }
 
-  @override
-  void cancelAndRestartTimer() {
-    _hideTimer?.cancel();
-    _startHideTimer();
-
-    setState(() {
-      _hideStuff = false;
-      _displayTapped = true;
-    });
-  }
-
-  Future<void> _initialize() async {
-
-    if ((_controller!.value.isPlaying) ||
-        _betterPlayerController!.betterPlayerConfiguration.autoPlay) {
-      _startHideTimer();
-    }
-
-    if (_controlsConfiguration.showControlsOnInitialize) {
-      _initTimer = Timer(const Duration(milliseconds: 200), () {
-        setState(() {
-          _hideStuff = false;
-        });
-      });
-    }
-
-    _controlsVisibilityStreamSubscription =
-        _betterPlayerController!.controlsVisibilityStream.listen((state) {
-      setState(() {
-        _hideStuff = !state;
-      });
-      if (!_hideStuff) {
-        cancelAndRestartTimer();
-      }
-    });
-  }
-
   void _onPlayPause() {
 
     setState(() {
       if (_controller!.value.isPlaying) {
-        _hideStuff = false;
-        _hideTimer?.cancel();
         _betterPlayerController!.pause();
       } else {
-        cancelAndRestartTimer();
 
         if (!_controller!.value.initialized) {
         } else {
           _betterPlayerController!.play();
         }
       }
-    });
-  }
-
-  void _startHideTimer() {
-    if (_betterPlayerController!.controlsAlwaysVisible) {
-      return;
-    }
-    _hideTimer = Timer(const Duration(seconds: 3), () {
-      setState(() {
-        _hideStuff = true;
-      });
     });
   }
 
@@ -281,12 +215,6 @@ class _BetterPlayerMaterialControlsState
         child: BetterPlayerMaterialVideoProgressBar(
           _controller,
           _betterPlayerController,
-          onDragStart: () {
-            _hideTimer?.cancel();
-          },
-          onDragEnd: () {
-            _startHideTimer();
-          },
           colors: BetterPlayerProgressColors(
               playedColor: _controlsConfiguration.progressBarPlayedColor,
               handleColor: _controlsConfiguration.progressBarHandleColor,
@@ -296,11 +224,6 @@ class _BetterPlayerMaterialControlsState
         ),
       ),
     );
-  }
-
-  void _onPlayerHide() {
-    _betterPlayerController!.toggleControlsVisibility(!_hideStuff);
-    widget.onControlsVisibilityChanged(!_hideStuff);
   }
 
   Widget? _buildLoadingWidget() {

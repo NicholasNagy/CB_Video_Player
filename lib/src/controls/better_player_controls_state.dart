@@ -18,6 +18,4 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
 
   BetterPlayerControlsConfiguration get betterPlayerControlsConfiguration;
 
-  void cancelAndRestartTimer();
-
 }
