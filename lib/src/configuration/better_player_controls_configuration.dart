@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:better_player/better_player.dart';
 
 // Project imports:
-import 'package:better_player/src/controls/better_player_overflow_menu_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -105,9 +104,6 @@ class BetterPlayerControlsConfiguration {
   ///Flag used to show/hide audio tracks
   final bool enableAudioTracks;
 
-  ///Custom items of overflow menu
-  final List<BetterPlayerOverflowMenuItem> overflowMenuCustomItems;
-
   ///Icon of the overflow menu
   final IconData overflowMenuIcon;
 
@@ -172,7 +168,6 @@ class BetterPlayerControlsConfiguration {
       this.enableOverflowMenu = true,
       this.enableQualities = true,
       this.enableRetry = true,
-      this.overflowMenuCustomItems = const [],
       this.overflowMenuIcon = Icons.more_vert,
       this.qualitiesIcon = Icons.hd,
       this.audioTracksIcon = Icons.audiotrack,
