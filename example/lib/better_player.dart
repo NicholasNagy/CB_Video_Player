@@ -5,16 +5,14 @@ class TheBetterPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BetterPlayerController ctl = BetterPlayerController(
-      BetterPlayerConfiguration(aspectRatio: 16 / 9, autoPlay: true, looping: true),
+      BetterPlayerConfiguration(
+          aspectRatio: 16 / 9, autoPlay: true, looping: true),
       betterPlayerDataSource: BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
-          "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"),
+          "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"),
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Example player"),
-      ),
       body: AspectRatio(
         aspectRatio: 16 / 9,
         child: BetterPlayer(

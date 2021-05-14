@@ -13,7 +13,6 @@ import 'package:better_player/src/configuration/better_player_video_format.dart'
 import 'package:better_player/src/core/better_player_controller_provider.dart';
 
 // Flutter imports:
-import 'package:better_player/src/core/better_player_utils.dart';
 import 'package:better_player/src/hls/better_player_hls_audio_track.dart';
 import 'package:better_player/src/hls/better_player_hls_track.dart';
 import 'package:better_player/src/hls/better_player_hls_utils.dart';
@@ -29,7 +28,6 @@ import 'package:path_provider/path_provider.dart';
 class BetterPlayerController {
   static const String _durationParameter = "duration";
   static const String _progressParameter = "progress";
-  static const String _volumeParameter = "volume";
   static const String _dataSourceParameter = "dataSource";
   static const String _hlsExtension = "m3u8";
   static const String _authorizationHeader = "Authorization";
@@ -179,7 +177,7 @@ class BetterPlayerController {
     }
 
     ///Clear hls tracks
-    betterPlayerTracks.clear();
+    _betterPlayerTracks.clear();
 
     if (_isDataSourceHls(betterPlayerDataSource)) {
       _setupHlsDataSource();
@@ -351,11 +349,6 @@ class BetterPlayerController {
         await play();
       }
     }
-
-    final startAt = betterPlayerConfiguration.startAt;
-    if (startAt != null) {
-      seekTo(startAt);
-    }
   }
 
   ///Start video playback. Play will be triggered only if current lifecycle state
@@ -412,20 +405,6 @@ class BetterPlayerController {
     }
   }
 
-  ///Set volume of player. Allows values from 0.0 to 1.0.
-  Future<void> setVolume(double volume) async {
-    if (volume < 0.0 || volume > 1.0) {
-      throw ArgumentError("Volume must be between 0.0 and 1.0");
-    }
-    if (videoPlayerController == null) {
-      BetterPlayerUtils.log("The data source has not been initialized");
-      return;
-    }
-    await videoPlayerController!.setVolume(volume);
-    _postEvent(BetterPlayerEvent(BetterPlayerEventType.setVolume,
-        parameters: <String, dynamic>{_volumeParameter: volume}));
-  }
-
   ///Flag which determines whenever player is playing or not.
   bool? isPlaying() {
     if (videoPlayerController == null) {
@@ -440,19 +419,6 @@ class BetterPlayerController {
       throw StateError("The data source has not been initialized");
     }
     return videoPlayerController!.value.isBuffering;
-  }
-
-  ///Show or hide controls manually
-  void setControlsVisibility(bool isVisible) {
-    _controlsVisibilityStreamController.add(isVisible);
-  }
-
-  ///Enable/disable controls (when enabled = false, controls will be always hidden)
-  void setControlsEnabled(bool enabled) {
-    if (!enabled) {
-      _controlsVisibilityStreamController.add(false);
-    }
-    _controlsEnabled = enabled;
   }
 
   ///Internal method, used to trigger CONTROLS_VISIBLE or CONTROLS_HIDDEN event
