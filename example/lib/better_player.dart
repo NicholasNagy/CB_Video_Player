@@ -6,7 +6,7 @@ class TheBetterPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     BetterPlayerController ctl = BetterPlayerController(
       BetterPlayerConfiguration(
-          aspectRatio: 16 / 9, autoPlay: true, looping: true),
+          aspectRatio: 9 / 16, autoPlay: true, looping: true),
       betterPlayerDataSource: BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"),
@@ -14,7 +14,7 @@ class TheBetterPlayer extends StatelessWidget {
 
     return Scaffold(
       body: AspectRatio(
-        aspectRatio: 16 / 9,
+        aspectRatio: 9 / 16,
         child: BetterPlayer(
           controller: ctl,
         ),

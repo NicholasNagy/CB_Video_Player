@@ -12,10 +12,6 @@ import 'package:better_player/src/configuration/better_player_event_type.dart';
 import 'package:better_player/src/configuration/better_player_video_format.dart';
 import 'package:better_player/src/core/better_player_controller_provider.dart';
 
-// Flutter imports:
-import 'package:better_player/src/hls/better_player_hls_audio_track.dart';
-import 'package:better_player/src/hls/better_player_hls_track.dart';
-import 'package:better_player/src/hls/better_player_hls_utils.dart';
 import 'package:better_player/src/video_player/video_player.dart';
 import 'package:better_player/src/video_player/video_player_platform_interface.dart';
 import 'package:flutter/material.dart';
@@ -58,18 +54,6 @@ class BetterPlayerController {
 
   ///Currently used data source in player.
   BetterPlayerDataSource? get betterPlayerDataSource => _betterPlayerDataSource;
-
-  ///List of tracks available for current data source. Used only for HLS.
-  List<BetterPlayerHlsTrack> _betterPlayerTracks = [];
-
-  ///List of tracks available for current data source. Used only for HLS.
-  List<BetterPlayerHlsTrack> get betterPlayerTracks => _betterPlayerTracks;
-
-  ///Currently selected player track. Used only for HLS.
-  BetterPlayerHlsTrack? _betterPlayerTrack;
-
-  ///Currently selected player track. Used only for HLS.
-  BetterPlayerHlsTrack? get betterPlayerTrack => _betterPlayerTrack;
 
   ///Timer for next video. Used in playlist.
   Timer? _nextVideoTimer;
@@ -114,20 +98,6 @@ class BetterPlayerController {
 
   ///Are controls always visible
   bool get controlsAlwaysVisible => _controlsAlwaysVisible;
-
-  ///List of all possible audio tracks returned from HLS stream
-  List<BetterPlayerHlsAudioTrack>? _betterPlayerAudioTracks;
-
-  ///List of all possible audio tracks returned from HLS stream
-  List<BetterPlayerHlsAudioTrack>? get betterPlayerAudioTracks =>
-      _betterPlayerAudioTracks;
-
-  ///Selected HLS audio track
-  BetterPlayerHlsAudioTrack? _betterPlayerHlsAudioTrack;
-
-  ///Selected HLS audio track
-  BetterPlayerHlsAudioTrack? get betterPlayerAudioTrack =>
-      _betterPlayerHlsAudioTrack;
 
   ///Selected videoPlayerValue when error occurred.
   VideoPlayerValue? _videoPlayerValueOnError;
@@ -176,49 +146,14 @@ class BetterPlayerController {
       videoPlayerController = VideoPlayerController();
     }
 
-    ///Clear hls tracks
-    _betterPlayerTracks.clear();
-
-    if (_isDataSourceHls(betterPlayerDataSource)) {
-      _setupHlsDataSource();
-    }
-
     ///Process data source
     await _setupDataSource(betterPlayerDataSource);
-    setTrack(BetterPlayerHlsTrack.defaultTrack());
   }
 
   ///Check if given [betterPlayerDataSource] is HLS-type data source.
   bool _isDataSourceHls(BetterPlayerDataSource betterPlayerDataSource) =>
       betterPlayerDataSource.url.contains(_hlsExtension) ||
       betterPlayerDataSource.videoFormat == BetterPlayerVideoFormat.hls;
-
-  ///Configure HLS data source based on provided data source and configuration.
-  ///This method configures tracks, and audio tracks from given
-  ///master playlist.
-  Future _setupHlsDataSource() async {
-    final String? hlsData = await BetterPlayerHlsUtils.getDataFromUrl(
-      betterPlayerDataSource!.url,
-      _getHeaders(),
-    );
-    if (hlsData != null) {
-      /// Load hls tracks
-      if (_betterPlayerDataSource?.useHlsTracks == true) {
-        _betterPlayerTracks = await BetterPlayerHlsUtils.parseTracks(
-            hlsData, betterPlayerDataSource!.url);
-      }
-
-      ///Load audio tracks
-      if (betterPlayerDataSource?.useHlsAudioTracks == true &&
-          _isDataSourceHls(betterPlayerDataSource!)) {
-        _betterPlayerAudioTracks = await BetterPlayerHlsUtils.parseLanguages(
-            hlsData, betterPlayerDataSource!.url);
-        if (_betterPlayerAudioTracks?.isNotEmpty == true) {
-          setAudioTrack(_betterPlayerAudioTracks!.first);
-        }
-      }
-    }
-  }
 
   ///Get VideoFormat from BetterPlayerVideoFormat (adapter method which translates
   ///to video_player supported format).
@@ -470,19 +405,6 @@ class BetterPlayerController {
     return videoPlayerController?.value.initialized;
   }
 
-  ///Setup track parameters for currently played video. Can be used only for HLS
-  ///data source.
-  void setTrack(BetterPlayerHlsTrack track) {
-    if (videoPlayerController == null) {
-      throw StateError("The data source has not been initialized");
-    }
-    _postEvent(BetterPlayerEvent(BetterPlayerEventType.changedTrack));
-
-    videoPlayerController!
-        .setTrackParameters(track.width, track.height, track.bitrate);
-    _betterPlayerTrack = track;
-  }
-
   ///Check if player can be played/paused automatically
   bool _isAutomaticPlayPauseHandled() {
     return !(_betterPlayerDataSource
@@ -618,30 +540,6 @@ class BetterPlayerController {
       await play();
       _videoPlayerValueOnError = null;
     }
-  }
-
-  ///Set [audioTrack] in player. Works only for HLS streams.
-  void setAudioTrack(BetterPlayerHlsAudioTrack audioTrack) {
-    if (videoPlayerController == null) {
-      throw StateError("The data source has not been initialized");
-    }
-
-    if (audioTrack.language == null) {
-      _betterPlayerHlsAudioTrack = null;
-      return;
-    }
-
-    _betterPlayerHlsAudioTrack = audioTrack;
-    videoPlayerController!.setAudioTrack(audioTrack.label, audioTrack.id);
-  }
-
-  ///Enable or disable audio mixing with other sound within device.
-  void setMixWithOthers(bool mixWithOthers) {
-    if (videoPlayerController == null) {
-      throw StateError("The data source has not been initialized");
-    }
-
-    videoPlayerController!.setMixWithOthers(mixWithOthers);
   }
 
   ///Clear all cached data. Video player controller must be initialized to
