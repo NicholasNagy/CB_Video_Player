@@ -185,8 +185,10 @@ API_AVAILABLE(ios(9.0))
 
 - (void)itemDidPlayToEndTime:(NSNotification*)notification {
     if (_isLooping) {
-        AVPlayerItem* p = [notification object];
-        [p seekToTime:kCMTimeZero completionHandler:nil];
+        // to prevent reloading the entire video again, we seek to 1
+        // My guess is that this happens because the first millisecond isn't buffered at the start
+        // so when we seek to 0, it will buffer as if nothing was previously buffered
+        [self seekTo:1];
     } else {
         if (_eventSink) {
             _eventSink(@{@"event" : @"completed", @"key" : _key});
@@ -566,6 +568,24 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     return FLTCMTimeToMillis(time);
 }
 
+- (void)seekTo:(int)location {
+    ///When player is playing, pause video, seek to new position and start again. This will prevent issues with seekbar jumps.
+    bool wasPlaying = _isPlaying;
+    if (wasPlaying){
+        [_player pause];
+    }
+    
+    [_player seekToTime:CMTimeMake(location, 1000)
+        toleranceBefore:kCMTimeZero
+         toleranceAfter:kCMTimeZero
+      completionHandler:^(BOOL finished){
+        if (wasPlaying){
+            [self->_player play];
+        }
+    }];
+    
+}
+
 - (void)setIsLooping:(bool)isLooping {
     _isLooping = isLooping;
 }
@@ -893,7 +913,11 @@ NSMutableDictionary*  _artworkImageDict;
     
     if (@available(iOS 9.1, *)) {
         [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-            
+            MPChangePlaybackPositionCommandEvent * playbackEvent = (MPChangePlaybackRateCommandEvent * ) event;
+            CMTime time = CMTimeMake(playbackEvent.positionTime, 1);
+            int64_t millis = FLTCMTimeToMillis(time);
+            [player seekTo: millis];
+            player.eventSink(@{@"event" : @"seek", @"position": @(millis)});
             return MPRemoteCommandHandlerStatusSuccess;
         }];
         
