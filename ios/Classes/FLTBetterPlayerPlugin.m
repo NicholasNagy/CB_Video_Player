@@ -663,12 +663,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     NSArray* options = audioSelectionGroup.options;
     
     
-    for (int index = 0; index < [options count]; index++) {
-        AVMediaSelectionOption* option = [options objectAtIndex:index];
+    for (int i = 0; i < [options count]; i++) {
+        AVMediaSelectionOption* option = [options objectAtIndex:i];
         NSArray *metaDatas = [AVMetadataItem metadataItemsFromArray:option.commonMetadata withKey:@"title" keySpace:@"comn"];
         if (metaDatas.count > 0) {
             NSString *title = ((AVMetadataItem*)[metaDatas objectAtIndex:0]).stringValue;
-            if (title == name && index == index ){
+            if (title == name && index == i ){
                 [[_player currentItem] selectMediaOption:option inMediaSelectionGroup: audioSelectionGroup];
             }
         }
