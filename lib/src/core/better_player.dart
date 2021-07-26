@@ -69,7 +69,6 @@ class _BetterPlayerState extends State<BetterPlayer>
   @override
   void dispose() {
     WidgetsBinding.instance!.removeObserver(this);
-    widget.controller.dispose();
     super.dispose();
   }
 

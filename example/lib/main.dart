@@ -21,6 +21,7 @@ class _AppState extends State<App> {
             textDirection: TextDirection.ltr,
             child: PageView(
               children: t,
+              scrollDirection: Axis.vertical,
             )));
   }
 }
