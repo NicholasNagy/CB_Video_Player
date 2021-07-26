@@ -309,6 +309,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         AVURLAsset* asset = [AVURLAsset URLAssetWithURL:url
                                                 options:@{@"AVURLAssetHTTPHeaderFieldsKey" : headers}];
         item = [AVPlayerItem playerItemWithAsset:asset];
+        if (@available(iOS 10.0, *)) {
+            double k = 3;
+            item.preferredForwardBufferDuration = k;
+        }
     }
     
     if (@available(iOS 10.0, *) && overriddenDuration > 0) {
@@ -539,6 +543,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     _stalledCount = 0;
     _isPlaying = true;
     [self updatePlayingState];
+    if (@available(iOS 10.0, *)) {
+        AVPlayerItem *k = [self player].currentItem;
+        k.preferredForwardBufferDuration = 30.0;
+        [[self player] replaceCurrentItemWithPlayerItem:k];
+    }
 }
 
 - (void)pause {
