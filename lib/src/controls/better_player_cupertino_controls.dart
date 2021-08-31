@@ -54,12 +54,7 @@ class _BetterPlayerCupertinoControlsState
     _betterPlayerController = BetterPlayerController.of(context);
     _betterPlayerController = BetterPlayerController.of(context);
     _controller = _betterPlayerController!.videoPlayerController;
-    return GestureDetector(
-      onDoubleTap: () {
-        // The double Tap PlayPause
-        _onPlayPause();
-      },
-    );
+    return GestureDetector();
   }
 
   @override

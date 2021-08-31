@@ -49,11 +49,7 @@ class _BetterPlayerMaterialControlsState
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onDoubleTap: () {
-        _onPlayPause();
-      },
-    );
+    return GestureDetector();
   }
 
   @override
