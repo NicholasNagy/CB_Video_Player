@@ -545,7 +545,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [self updatePlayingState];
     if (@available(iOS 10.0, *)) {
         AVPlayerItem *k = [self player].currentItem;
-        k.preferredForwardBufferDuration = 30.0;
         [[self player] replaceCurrentItemWithPlayerItem:k];
     }
 }
