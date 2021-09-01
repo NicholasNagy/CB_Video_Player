@@ -302,6 +302,16 @@ class BetterPlayerController {
     }
   }
 
+  // Sets volume to 0 for video player
+  Future<void> mute() async {
+    await videoPlayerController!.mute();
+  }
+
+  // Sets volume to 1 for video player
+  Future<void> unmute() async {
+    await videoPlayerController!.unmute();
+  }
+
   ///Enables/disables looping (infinity playback) mode.
   Future<void> setLooping(bool looping) async {
     if (videoPlayerController == null) {

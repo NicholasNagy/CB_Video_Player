@@ -454,6 +454,16 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
   }
 
+  // sets video volume to 0
+  Future<void> mute() async {
+    await _videoPlayerPlatform.setVolume(_textureId, 0);
+  }
+
+  // sets video volume to max (i.e. 1)
+  Future<void> unmute() async {
+    await _videoPlayerPlatform.setVolume(_textureId, 1.0);
+  }
+
   /// The position in the current video.
   Future<Duration?> get position async {
     if (!value.initialized && _isDisposed) {
