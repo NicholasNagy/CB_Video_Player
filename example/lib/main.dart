@@ -1,3 +1,5 @@
+import 'package:player_test/video_page.dart';
+
 import 'better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
@@ -6,7 +8,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-void main() => runApp(App());
+void main() => runApp(VideoPage());
 
 class App extends StatefulWidget {
   @override
@@ -55,18 +57,18 @@ class _AppState extends State<App> {
     k.play();
     var v = controllers[(index - 1) % 5];
     v.pause();
-    return GestureDetector(                        
-      child: BetterPlayer(controller: k),                        
-      onTap: () {   
+    return GestureDetector(
+      child: BetterPlayer(controller: k),
+      onTap: () {
         print(k.isPlaying());
         if (k.isPlaying()) {
           k.pause();
         } else {
           k.play();
-        }              
-      
-      print("something");
-      },                      
+        }
+
+        print("something");
+      },
     );
   }
 
@@ -77,7 +79,7 @@ class _AppState extends State<App> {
     print("hi");
     http.Response response = await http.post(Uri.parse(url),
         headers: {"Content-Type": "application/json"}, body: body);
-        print("hilo");
+    print("hilo");
     if (response.statusCode == 200) {
       var resBody = jsonDecode(response.body) as Map<String, dynamic>;
       print(resBody);
@@ -96,11 +98,12 @@ class _AppState extends State<App> {
 
   BetterPlayerController createController(int index) {
     return BetterPlayerController(
-      BetterPlayerConfiguration(
-          aspectRatio: 9 / 16, autoPlay: false, looping: true),
-      betterPlayerDataSource: BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network, "https://replied-resources.s3.amazonaws.com/transcoded-videos/RivQBjWB25ddrJcDTZaQWERRVsF3/b7b93bc9-2362-48be-a64d-34fa13d164ce/master.m3u8",
-    ));
+        BetterPlayerConfiguration(
+            aspectRatio: 9 / 16, autoPlay: false, looping: true),
+        betterPlayerDataSource: BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network,
+          "https://replied-resources.s3.amazonaws.com/transcoded-videos/RivQBjWB25ddrJcDTZaQWERRVsF3/b7b93bc9-2362-48be-a64d-34fa13d164ce/master.m3u8",
+        ));
   }
 
   @override
