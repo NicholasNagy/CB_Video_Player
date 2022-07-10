@@ -3,6 +3,7 @@ description: Advanced video player based on video_player and Chewie. It's solves
 version: 0.0.65
 authors:
   - Jakub Homlala <jhomlala@gmail.com>
+  - Nicholas Nagy <ygannicholas@gmail.com>
 homepage: https://github.com/jhomlala/betterplayer
 
 environment:

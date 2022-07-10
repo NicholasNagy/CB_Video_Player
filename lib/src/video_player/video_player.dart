@@ -433,6 +433,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     _timer?.cancel();
     if (value.isPlaying) {
+      // TODO: look for potential issue here in asynchronousity
       await _videoPlayerPlatform.play(_textureId);
       _timer = Timer.periodic(
         const Duration(milliseconds: 500),

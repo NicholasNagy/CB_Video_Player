@@ -364,6 +364,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 -(void)handleStalled {
     if (_player.currentItem.playbackLikelyToKeepUp ||
         [self availableDuration] - CMTimeGetSeconds(_player.currentItem.currentTime) > 10.0) {
+        NSLog(@"Something related to being stalled");
         [self play];
     } else {
         _stalledCount++;
@@ -454,6 +455,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     } else if (context == playbackLikelyToKeepUpContext) {
         if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
             [self updatePlayingState];
+            NSLog(@"Would normally update playing state2");
             if (_eventSink != nil) {
                 _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
             }
@@ -480,6 +482,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
     
     if (_isPlaying) {
+        NSLog(@"Playing is true");
         if (@available(iOS 10.0, *)) {
             [_player playImmediatelyAtRate:1.0];
             _player.rate = _playerRate;
@@ -488,6 +491,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
             _player.rate = _playerRate;
         }
     } else {
+        NSLog(@"Playing is false");
         [_player pause];
     }
     _displayLink.paused = !_isPlaying;
@@ -541,6 +545,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)play {
     _stalledCount = 0;
+    NSLog(@"Play is called!");
     _isPlaying = true;
     [self updatePlayingState];
     if (@available(iOS 10.0, *)) {
@@ -550,6 +555,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)pause {
+    NSLog(@"Pause is called!");
     _isPlaying = false;
     [self updatePlayingState];
 }
@@ -578,18 +584,19 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)seekTo:(int)location {
     ///When player is playing, pause video, seek to new position and start again. This will prevent issues with seekbar jumps.
-    bool wasPlaying = _isPlaying;
-    if (wasPlaying){
-        [_player pause];
-    }
+    // bool wasPlaying = _isPlaying;
+    // if (wasPlaying){
+    //     [_player pause];
+    // }
     
     [_player seekToTime:CMTimeMake(location, 1000)
         toleranceBefore:kCMTimeZero
          toleranceAfter:kCMTimeZero
       completionHandler:^(BOOL finished){
-        if (wasPlaying){
-            [self->_player play];
-        }
+        // if (wasPlaying){
+        //     NSLog(@"This is being called?");
+        //     [self->_player play];
+        // }
     }];
     
 }
@@ -899,8 +906,11 @@ NSMutableDictionary*  _artworkImageDict;
     
     [commandCenter.togglePlayPauseCommand addTargetWithHandler: ^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
         if (player.isPlaying){
+            NSLog(@"Player is playing!");
             player.eventSink(@{@"event" : @"play"});
+            
         } else {
+            NSLog(@"Player is paused!");
             player.eventSink(@{@"event" : @"pause"});
             
         }
@@ -1123,6 +1133,7 @@ NSMutableDictionary*  _artworkImageDict;
             result(nil);
         } else if ([@"play" isEqualToString:call.method]) {
             [self setupRemoteNotification:player];
+            NSLog(@"just making sure this is being used");
             [player play];
             result(nil);
         } else if ([@"position" isEqualToString:call.method]) {
