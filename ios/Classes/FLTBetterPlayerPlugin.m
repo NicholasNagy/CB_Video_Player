@@ -364,8 +364,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 -(void)handleStalled {
     if (_player.currentItem.playbackLikelyToKeepUp ||
         [self availableDuration] - CMTimeGetSeconds(_player.currentItem.currentTime) > 10.0) {
-        NSLog(@"Something related to being stalled");
-        [self play];
+        NSLog(@"Something related to being stalled2");
+        // TODO: Check to see if this play statement actually makes sense. Why would we continue playing?
+        // Especially if it's already playing?
+        //[self play];
     } else {
         _stalledCount++;
         if (_stalledCount > 5){
