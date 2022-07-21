@@ -363,8 +363,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 -(void)handleStalled {
     if (_player.currentItem.playbackLikelyToKeepUp ||
-        [self availableDuration] - CMTimeGetSeconds(_player.currentItem.currentTime) > 10.0) {
-        NSLog(@"Something related to being stalled2");
+        [self availableDuration] - CMTimeGetSeconds(_player.currentItem.currentTime) > 10.0) {        
         // TODO: Check to see if this play statement actually makes sense. Why would we continue playing?
         // Especially if it's already playing?
         //[self play];
@@ -456,8 +455,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         }
     } else if (context == playbackLikelyToKeepUpContext) {
         if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
-            [self updatePlayingState];
-            NSLog(@"Would normally update playing state2");
+            [self updatePlayingState];            
             if (_eventSink != nil) {
                 _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
             }
@@ -483,8 +481,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         [self addObservers:[_player currentItem]];
     }
     
-    if (_isPlaying) {
-        NSLog(@"Playing is true");
+    if (_isPlaying) {        
         if (@available(iOS 10.0, *)) {
             [_player playImmediatelyAtRate:1.0];
             _player.rate = _playerRate;
@@ -492,8 +489,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
             [_player play];
             _player.rate = _playerRate;
         }
-    } else {
-        NSLog(@"Playing is false");
+    } else {        
         [_player pause];
     }
     _displayLink.paused = !_isPlaying;
@@ -546,8 +542,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)play {
-    _stalledCount = 0;
-    NSLog(@"Play is called!");
+    _stalledCount = 0;    
     _isPlaying = true;
     [self updatePlayingState];
     if (@available(iOS 10.0, *)) {
@@ -556,8 +551,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
 }
 
-- (void)pause {
-    NSLog(@"Pause is called!");
+- (void)pause {    
     _isPlaying = false;
     [self updatePlayingState];
 }
@@ -907,12 +901,10 @@ NSMutableDictionary*  _artworkImageDict;
     }
     
     [commandCenter.togglePlayPauseCommand addTargetWithHandler: ^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        if (player.isPlaying){
-            NSLog(@"Player is playing!");
+        if (player.isPlaying){            
             player.eventSink(@{@"event" : @"play"});
             
-        } else {
-            NSLog(@"Player is paused!");
+        } else {            
             player.eventSink(@{@"event" : @"pause"});
             
         }
@@ -1134,8 +1126,7 @@ NSMutableDictionary*  _artworkImageDict;
             [player setVolume:[argsMap[@"volume"] doubleValue]];
             result(nil);
         } else if ([@"play" isEqualToString:call.method]) {
-            [self setupRemoteNotification:player];
-            NSLog(@"just making sure this is being used");
+            [self setupRemoteNotification:player];            
             [player play];
             result(nil);
         } else if ([@"position" isEqualToString:call.method]) {
