@@ -51,7 +51,7 @@ class _BetterPlayerCupertinoControlsState
 
   @override
   Widget build(BuildContext context) {
-    _betterPlayerController = BetterPlayerController.of(context);
+    //_betterPlayerController = BetterPlayerController.of(context);
     _betterPlayerController = BetterPlayerController.of(context);
     _controller = _betterPlayerController!.videoPlayerController;
     return GestureDetector();

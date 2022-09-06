@@ -114,13 +114,10 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
         fit: StackFit.passthrough,
         children: <Widget>[
           if (placeholderOnTop) _buildPlaceholder(betterPlayerController),
-          Transform.rotate(
-            angle: rotation * pi / 180,
-            child: _BetterPlayerVideoFitWidget(
+          _BetterPlayerVideoFitWidget(
               betterPlayerController,
               betterPlayerController.betterPlayerConfiguration.fit,
             ),
-          ),
           betterPlayerController.betterPlayerConfiguration.overlay ??
               Container(),
           if (!placeholderOnTop) _buildPlaceholder(betterPlayerController),

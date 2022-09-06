@@ -9,8 +9,6 @@ import 'package:flutter/widgets.dart';
 // Package imports:
 import 'package:visibility_detector/visibility_detector.dart';
 
-import 'better_player_controller_provider.dart';
-
 ///Widget which uses provided controller to render video player.
 class BetterPlayer extends StatefulWidget {
   const BetterPlayer({Key? key, required this.controller}) : super(key: key);

@@ -4,5 +4,7 @@
 
 #import <Flutter/Flutter.h>
 
+@class CacheManager;
+
 @interface FLTBetterPlayerPlugin : NSObject <FlutterPlugin>
 @end

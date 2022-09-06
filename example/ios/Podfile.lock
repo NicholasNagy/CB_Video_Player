@@ -1,15 +1,28 @@
 PODS:
   - better_player (0.0.1):
     - Flutter
+    - GCDWebServer (~> 3.5)
     - KTVHTTPCache (~> 2.0.0)
+    - PINCache (~> 3.0)
   - CocoaAsyncSocket (7.6.5)
   - Flutter (1.0.0)
+  - GCDWebServer (3.5.4):
+    - GCDWebServer/Core (= 3.5.4)
+  - GCDWebServer/Core (3.5.4)
   - KTVCocoaHTTPServer (1.0.0):
     - CocoaAsyncSocket
   - KTVHTTPCache (2.0.1):
     - KTVCocoaHTTPServer
   - path_provider_ios (0.0.1):
     - Flutter
+  - PINCache (3.0.3):
+    - PINCache/Arc-exception-safe (= 3.0.3)
+    - PINCache/Core (= 3.0.3)
+  - PINCache/Arc-exception-safe (3.0.3):
+    - PINCache/Core
+  - PINCache/Core (3.0.3):
+    - PINOperation (~> 1.2.1)
+  - PINOperation (1.2.1)
   - wakelock (0.0.1):
     - Flutter
 
@@ -22,8 +35,11 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - CocoaAsyncSocket
+    - GCDWebServer
     - KTVCocoaHTTPServer
     - KTVHTTPCache
+    - PINCache
+    - PINOperation
 
 EXTERNAL SOURCES:
   better_player:
@@ -36,12 +52,15 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/wakelock/ios"
 
 SPEC CHECKSUMS:
-  better_player: a8949044d388bca4a55ec9e4045e6b7d4306fdb1
+  better_player: f10a109209a2738647404fe1865d76cb9027d567
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
+  PINCache: 7a8fc1a691173d21dbddbf86cd515de6efa55086
+  PINOperation: 00c935935f1e8cf0d1e2d6b542e75b88fc3e5e20
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
