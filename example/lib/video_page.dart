@@ -133,7 +133,7 @@ class _VideoPageState extends State<VideoPage> {
           ],
         ),
         onTap: () {
-          ctl.preCache(exampleManifestUrl);
+          BetterPlayerController.preCache(exampleManifestUrl);
           //ctl.isPlaying() ? ctl.pause() : ctl.play();
         },
       ),

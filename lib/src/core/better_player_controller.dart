@@ -565,15 +565,8 @@ class BetterPlayerController {
     return headers;
   }
 
-  ///PreCache a video. Currently supports Android only. The future succeed when
-  ///the requested size, specified in
-  ///[BetterPlayerCacheConfiguration.preCacheSize], is downloaded or when the
-  ///complete file is downloaded if the file is smaller than the requested size.
-  Future<void> preCache(String betterPlayerDataSource) async {
-    // if (!Platform.isAndroid) {
-    //   return Future.error("preCache is currently only supported on Android.");
-    // }
-
+  ///PreCache a video. Only supports HLS.
+  static Future<void> preCache(String betterPlayerDataSource) async {
     return VideoPlayerController.preCache(betterPlayerDataSource);
   }
 
