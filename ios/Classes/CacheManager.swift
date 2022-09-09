@@ -44,7 +44,7 @@ import Foundation
             getRequest(url: url, handler: self.handleM3u8)
         } else {
             // handler does nothing when it is a .ts file
-            getRequest(url: url, handler: {data in print("got ts file!")})
+            getRequest(url: url, handler: {data in })
         }
     }
     

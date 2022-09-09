@@ -66,6 +66,10 @@ open class HLSCachingReverseProxyServer {
         return completion(GCDWebServerErrorResponse(statusCode: 400))
       }
 
+      if let cachedData = self.cachedData(for: originURL) {
+          return completion(GCDWebServerDataResponse(data: cachedData, contentType: "application/x-mpegurl"))
+      }
+
       let task = self.urlSession.dataTask(with: originURL) { data, response, error in
         guard let data = data, let response = response else {
           return completion(GCDWebServerErrorResponse(statusCode: 500))
@@ -74,6 +78,8 @@ open class HLSCachingReverseProxyServer {
         let playlistData = self.reverseProxyPlaylist(with: data, forOriginURL: originURL)
         let contentType = response.mimeType ?? "application/x-mpegurl"
         completion(GCDWebServerDataResponse(data: playlistData, contentType: contentType))
+          
+        self.saveCacheData(playlistData, for: originURL)
       }
 
       task.resume()
