@@ -9,6 +9,16 @@ import Foundation
         GCDWebServer.setLogLevel(4)
         let webServer = GCDWebServer()
         let cache = PINCache.shared
+        
+        // Warn devs when we reach the memory limit.
+        cache.memoryCache.didReceiveMemoryWarningBlock = { (theCache: PINCaching) in
+            print("RECEIVED MEMORY WARNING!!!!")
+            print("DELETING ALL OBJECTS IN MEMORY CACHE!")
+            print("BEWARE OF POTENTIAL PERFORMANCE DEGRADATION!")
+        }
+        
+        // set disk cache to 3GB.
+        cache.diskCache.byteLimit = 1024 * 1024 * 1024 * 3;
         let urlSession = URLSession.shared
         self.server = HLSCachingReverseProxyServer(webServer: webServer, urlSession: urlSession, cache: cache)
         server.start(port: 8080)
@@ -59,7 +69,6 @@ import Foundation
         let k = String(data: data, encoding: .utf8)!
             .components(separatedBy: .newlines)
             .first { line in self.isURL(line: line) }!
-        print(k)
         self.handlePreCache(url: URL.init(string: k)!, isM3u8: k.hasSuffix(".m3u8"))
     }
     
