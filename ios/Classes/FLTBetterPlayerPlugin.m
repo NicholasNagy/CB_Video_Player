@@ -1091,8 +1091,12 @@ NSMutableDictionary*  _artworkImageDict;
                 }
                 [player setDataSourceAsset:assetPath withKey:key overriddenDuration:overriddenDuration];
             } else if (uriArg) {
-                NSURL *proxyURL = [_cacheManager getCacheUrl:uriArg];
-                [player setDataSourceURL:proxyURL withKey:key withHeaders:headers withCache: useCache overriddenDuration:overriddenDuration];
+                if ([uriArg hasPrefix:@"file://"]) {
+                    [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key withHeaders:headers withCache: useCache overriddenDuration:overriddenDuration];
+                } else {
+                    NSURL *proxyURL = [_cacheManager getCacheUrl:uriArg];
+                    [player setDataSourceURL:proxyURL withKey:key withHeaders:headers withCache: useCache overriddenDuration:overriddenDuration];
+                }
             } else {
                 result(FlutterMethodNotImplemented);
             }
