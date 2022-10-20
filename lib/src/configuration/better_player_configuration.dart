@@ -3,8 +3,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 
-import 'better_player_event.dart';
-
 ///Configuration of Better Player. Allows to setup general behavior of player.
 ///Master configuration which contains children that configure specific part
 ///of player.
