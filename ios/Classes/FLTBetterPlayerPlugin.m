@@ -8,6 +8,7 @@
 #import <KTVHTTPCache/KTVHTTPCache.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVKit/AVKit.h>
+#import <better_player/better_player-Swift.h>
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
@@ -801,6 +802,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 @property(readonly, weak, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
 @property(readonly, strong, nonatomic) NSMutableDictionary* players;
 @property(readonly, strong, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+@property(readonly, strong, nonatomic) CacheManager* cacheManager;
 @end
 
 @implementation FLTBetterPlayerPlugin
@@ -829,6 +831,7 @@ NSMutableDictionary*  _artworkImageDict;
     _artworkImageDict = [NSMutableDictionary dictionary];
     _dataSourceDict = [NSMutableDictionary dictionary];
     [KTVHTTPCache proxyStart:nil];
+    _cacheManager = [[CacheManager alloc] init];
     return self;
 }
 
@@ -1088,7 +1091,12 @@ NSMutableDictionary*  _artworkImageDict;
                 }
                 [player setDataSourceAsset:assetPath withKey:key overriddenDuration:overriddenDuration];
             } else if (uriArg) {
-                [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key withHeaders:headers withCache: useCache overriddenDuration:overriddenDuration];
+                if ([uriArg hasPrefix:@"file://"]) {
+                    [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key withHeaders:headers withCache: useCache overriddenDuration:overriddenDuration];
+                } else {
+                    NSURL *proxyURL = [_cacheManager getCacheUrl:uriArg];
+                    [player setDataSourceURL:proxyURL withKey:key withHeaders:headers withCache: useCache overriddenDuration:overriddenDuration];
+                }
             } else {
                 result(FlutterMethodNotImplemented);
             }
@@ -1154,6 +1162,9 @@ NSMutableDictionary*  _artworkImageDict;
             [player setMixWithOthers:[argsMap[@"mixWithOthers"] boolValue]];
         } else if ([@"clearCache" isEqualToString:call.method]){
             [KTVHTTPCache cacheDeleteAllCaches];
+        } else if ([@"preCache" isEqualToString:call.method]) {
+            NSString* url = argsMap[@"dataSource"];
+            [_cacheManager preCache:url];
         } else {
             result(FlutterMethodNotImplemented);
         }

@@ -4,13 +4,7 @@ import 'dart:io';
 
 // Project imports:
 import 'package:better_player/better_player.dart';
-import 'package:better_player/src/configuration/better_player_configuration.dart';
 import 'package:better_player/src/configuration/better_player_controller_event.dart';
-import 'package:better_player/src/configuration/better_player_drm_type.dart';
-import 'package:better_player/src/configuration/better_player_event.dart';
-import 'package:better_player/src/configuration/better_player_event_type.dart';
-import 'package:better_player/src/configuration/better_player_video_format.dart';
-import 'package:better_player/src/core/better_player_controller_provider.dart';
 
 import 'package:better_player/src/video_player/video_player.dart';
 import 'package:better_player/src/video_player/video_player_platform_interface.dart';
@@ -571,27 +565,9 @@ class BetterPlayerController {
     return headers;
   }
 
-  ///PreCache a video. Currently supports Android only. The future succeed when
-  ///the requested size, specified in
-  ///[BetterPlayerCacheConfiguration.preCacheSize], is downloaded or when the
-  ///complete file is downloaded if the file is smaller than the requested size.
-  Future<void> preCache(BetterPlayerDataSource betterPlayerDataSource) async {
-    if (!Platform.isAndroid) {
-      return Future.error("preCache is currently only supported on Android.");
-    }
-
-    final cacheConfig = betterPlayerDataSource.cacheConfiguration ??
-        const BetterPlayerCacheConfiguration(useCache: true);
-
-    final dataSource = DataSource(
-        sourceType: DataSourceType.network,
-        uri: betterPlayerDataSource.url,
-        useCache: true,
-        headers: betterPlayerDataSource.headers,
-        maxCacheSize: cacheConfig.maxCacheSize,
-        maxCacheFileSize: cacheConfig.maxCacheFileSize);
-
-    return VideoPlayerController.preCache(dataSource, cacheConfig.preCacheSize);
+  ///PreCache a video. Only supports HLS.
+  static Future<void> preCache(String betterPlayerDataSource) async {
+    return VideoPlayerController.preCache(betterPlayerDataSource);
   }
 
   ///Stop pre cache for given [betterPlayerDataSource]. If there was no pre

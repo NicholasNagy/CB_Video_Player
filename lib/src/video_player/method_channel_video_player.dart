@@ -225,19 +225,11 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<void> preCache(DataSource dataSource, int preCacheSize) {
-    final Map<String, dynamic> dataSourceDescription = <String, dynamic>{
-      'key': dataSource.key,
-      'uri': dataSource.uri,
-      'headers': dataSource.headers,
-      'maxCacheSize': dataSource.maxCacheSize,
-      'maxCacheFileSize': dataSource.maxCacheFileSize,
-      'preCacheSize': preCacheSize
-    };
+  Future<void> preCache(String dataSource) {
     return _channel.invokeMethod<void>(
       'preCache',
       <String, dynamic>{
-        'dataSource': dataSourceDescription,
+        'dataSource': dataSource,
       },
     );
   }

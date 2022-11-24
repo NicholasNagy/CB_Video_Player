@@ -17,6 +17,8 @@ A new flutter plugin project.
   s.dependency 'Flutter'
   # KTVHTTPCache
   s.dependency 'KTVHTTPCache', '~> 2.0.0'
+  s.dependency 'GCDWebServer', '~> 3.5'
+  s.dependency 'PINCache', '~> 3.0'
   
   s.platform = :ios, '9.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
