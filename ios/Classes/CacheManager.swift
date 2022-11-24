@@ -28,7 +28,11 @@ import Foundation
     }
     
     @objc public func getCacheUrl(_ url: NSString) -> NSURL {
-        return self.server.reverseProxyURL(from: URL.init(string: url as String)!)! as NSURL
+        let reverseProxyUrl = self.server.reverseProxyURL(from: URL.init(string: url as String)!);
+        if(reverseProxyUrl == nil){
+            return URL(string: url as String)! as NSURL;
+        }
+        return reverseProxyUrl! as NSURL
     }
 
     @objc public func preCache(_ url: NSString) {
