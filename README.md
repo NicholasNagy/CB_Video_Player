@@ -2,7 +2,16 @@
 <img src="https://raw.githubusercontent.com/jhomlala/betterplayer/master/media/logo.png">
 </p>
 
-# Better Player
+# CB Video Player
+
+Notes:
+
+Some of the changes that were made to the better player include the following:
+
+- Slimmed down code base and removed a lot of needless functionality for simple video playing.
+- Added caching for videos that is done automatically
+- Added a function to get the initial segments for a video (AKA precaching).
+
 [![pub package](https://img.shields.io/pub/v/better_player.svg)](https://pub.dartlang.org/packages/better_player)
 [![pub package](https://img.shields.io/github/license/jhomlala/betterplayer.svg?style=flat)](https://github.com/jhomlala/betterplayer)
 [![pub package](https://img.shields.io/badge/platform-flutter-blue.svg)](https://github.com/jhomlala/betterplayer)
