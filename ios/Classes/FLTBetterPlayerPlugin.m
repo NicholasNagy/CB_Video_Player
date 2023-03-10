@@ -51,6 +51,7 @@ int64_t FLTNSTimeIntervalToMillis(NSTimeInterval interval) {
 @property(nonatomic) CGAffineTransform preferredTransform;
 @property(nonatomic, readonly) bool disposed;
 @property(nonatomic, readonly) bool isPlaying;
+@property(nonatomic) bool isSeeking;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
 @property(nonatomic, readonly) NSString* key;
@@ -89,6 +90,7 @@ API_AVAILABLE(ios(9.0))
     _isInitialized = false;
     _isPlaying = false;
     _disposed = false;
+    _isSeeking = false;
     _player = [[AVPlayer alloc] init];
     _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
     
@@ -493,7 +495,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     } else {        
         [_player pause];
     }
-    _displayLink.paused = !_isPlaying;
+    // set display link appropriately, however, don't pause
+    // the display link of the video isSeeking, as we don't
+    // want to block the UI from updating during seeking.
+    if (_isPlaying) {
+        _displayLink.paused = !_isPlaying;
+    } else if (!_isSeeking) {
+        _displayLink.paused = !_isPlaying;
+    }
 }
 
 - (void)onReadyToPlay {
@@ -585,14 +594,23 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     // if (wasPlaying){
     //     [_player pause];
     // }
-    
+    _isSeeking = true;
+    _displayLink.paused = NO; // to see seeking in video output
     [_player seekToTime:CMTimeMake(location, 1000)
         toleranceBefore:kCMTimeZero
          toleranceAfter:kCMTimeZero
       completionHandler:^(BOOL finished){
-        // this will refresh last frame after seeking.
-        // I effectively see no difference in performance while leaving it unpaused
-        _displayLink.paused = NO;
+        
+        // run async query to not run on main UI thread
+        // really buggy otherwise
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        dispatch_async(queue, ^{
+            // sleep for 2 frames (time is defined by displayLink duration)
+            [NSThread sleepForTimeInterval:2*_displayLink.duration];
+            _isSeeking = false;
+            // set display link as appropriate
+            _displayLink.paused = !_isPlaying;
+        });
     }];
     
 }
