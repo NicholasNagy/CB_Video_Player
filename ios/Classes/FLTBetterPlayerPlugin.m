@@ -590,10 +590,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         toleranceBefore:kCMTimeZero
          toleranceAfter:kCMTimeZero
       completionHandler:^(BOOL finished){
-        // if (wasPlaying){
-        //     NSLog(@"This is being called?");
-        //     [self->_player play];
-        // }
+        // this will refresh last frame after seeking.
+        // I effectively see no difference in performance while leaving it unpaused
+        _displayLink.paused = NO;
     }];
     
 }
