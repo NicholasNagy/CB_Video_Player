@@ -13,7 +13,6 @@ A new flutter plugin project.
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   # KTVHTTPCache
   s.dependency 'KTVHTTPCache', '~> 2.0.0'
