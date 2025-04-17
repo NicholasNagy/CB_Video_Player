@@ -124,28 +124,3 @@ class _AppState extends State<App> {
             : Text("Waiting to load initial page..."));
   }
 }
-
-// import 'package:flutter/material.dart';
-
-// void main() => runApp(App());
-
-// class App extends StatelessWidget {
-//   const App({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       color: Colors.black,
-//       child: MaterialApp(
-//         home: Scaffold(
-//           body: Center(
-//             child: Text(
-//               "Hello World",
-//               style: TextStyle(color: Colors.black),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
