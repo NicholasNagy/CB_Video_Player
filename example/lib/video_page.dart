@@ -1,154 +1,219 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:http/http.dart';
-import 'dart:typed_data';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 /// Simple stateful widget to reproduce the bug.
 /// Replaced the App() widget in the main function to run this one instead.
-///
-/// The issue can be noticed when the Play Icon will still be there (means that the video should be paused)
-/// and the video will continue playing.
 class VideoPage extends StatefulWidget {
-  VideoPage({Key key}) : super(key: key);
+  VideoPage({Key? key}) : super(key: key);
 
   @override
   State<VideoPage> createState() => _VideoPageState();
 }
 
 class _VideoPageState extends State<VideoPage> {
-  ByteData k;
-  List<int> necStuff;
-  String path;
-  bool isPlaying = true;
+  String? path;
+  List<int>? videoBytes;
+  bool isLoading = true;
+
+  // Track current page index
+  int currentPageIndex = 0;
+
+  // Store controllers with page index as key
+  Map<int, BetterPlayerController> controllers = {};
+
+  // Track play state for each video
+  Map<int, bool> playingStates = {};
+
   String exampleManifestUrl =
       'https://replied-resources.s3.amazonaws.com/transcoded-videos/'
       'Sc9xBOOx3cblM82doaUK9rr8xYx1/dd03019b-5390-4378-9952-287122b47944/master.m3u8';
-  List<BetterPlayerController> but = new List(3);
-  int cI = 0;
-
-  Future<String> dothing() async {
-    var content = await rootBundle.load("assets/testtest.mp4");
-    Directory directory = await getApplicationDocumentsDirectory();
-    this.path = directory.path;
-    var file = File("${directory.path}/testvideo.mp4");
-    file.writeAsBytesSync(content.buffer.asUint8List());
-    return "hi";
-  }
 
   @override
   void initState() {
-    dothing().then((ku) {
-      this.necStuff = File("${this.path}/testvideo.mp4")
-          .readAsBytesSync()
-          .buffer
-          .asUint8List();
-      //print(this.necStuff);
-    });
-    but[0] = getController();
     super.initState();
+    setState(() {
+      isLoading = true;
+    });
+    prepareVideo();
+  }
+
+  Future<void> prepareVideo() async {
+    try {
+      var content = await rootBundle.load("assets/testtest.mp4");
+      Directory directory = await getApplicationDocumentsDirectory();
+      path = directory.path;
+
+      var file = File("${directory.path}/testvideo.mp4");
+      file.writeAsBytesSync(content.buffer.asUint8List());
+
+      videoBytes = file.readAsBytesSync().buffer.asUint8List();
+
+      // Initialize first controller
+      controllers[0] = createController();
+      playingStates[0] = true;
+
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error preparing video: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  BetterPlayerController createController() {
+    return BetterPlayerController(
+      BetterPlayerConfiguration(
+        placeholderOnTop: true,
+        placeholder: Center(child: CupertinoActivityIndicator()),
+        aspectRatio: 9 / 16,
+        autoPlay: true,
+        looping: true,
+        autoDispose: false,
+        controlsConfiguration: BetterPlayerControlsConfiguration(
+          showControls: false,
+          enableOverflowMenu: false,
+          enablePlayPause: false,
+          enableMute: false,
+        ),
+      ),
+      betterPlayerDataSource: BetterPlayerDataSource(
+        BetterPlayerDataSourceType.file,
+        "${path}/testvideo.mp4",
+        bytes: videoBytes,
+        videoExtension: "mp4",
+      ),
+    );
+  }
+
+  Future<void> togglePlayPause(int index) async {
+    final controller = controllers[index];
+    if (controller == null) return;
+
+    final isPlaying = await controller.isPlaying() ?? false;
+
+    if (isPlaying) {
+      await controller.pause();
+      if (mounted) {
+        setState(() {
+          playingStates[index] = false;
+        });
+      }
+      print('Paused video $index');
+    } else {
+      await controller.play();
+      if (mounted) {
+        setState(() {
+          playingStates[index] = true;
+        });
+      }
+      print('Playing video $index');
+    }
   }
 
   @override
   void dispose() {
+    // Clean up all controllers
+    for (var controller in controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
-  BetterPlayerController getController() {
-    var before = DateTime.now().microsecondsSinceEpoch;
-    print(this.necStuff == null);
-    var ctl = BetterPlayerController(
-        BetterPlayerConfiguration(
-            placeholderOnTop: true,
-            placeholder: Center(child: CupertinoActivityIndicator()),
-            aspectRatio: 9 / 16,
-            autoPlay: true,
-            looping: true,
-            autoDispose: true,
-            controlsConfiguration: BetterPlayerControlsConfiguration(
-                showControls: false,
-                enableOverflowMenu: false,
-                enablePlayPause: false,
-                enableMute: false)),
-        betterPlayerDataSource: BetterPlayerDataSource(
-            //this.necStuff == null
-            //? BetterPlayerDataSourceType.network
-            //: BetterPlayerDataSourceType.memory,
-            BetterPlayerDataSourceType.network,
-            //this.necStuff == null ? exampleManifestUrl : "",
-            //bytes: this.necStuff,
-            exampleManifestUrl,
-            videoExtension: "mp4"));
-    var after = DateTime.now().microsecondsSinceEpoch;
-    print(after - before);
-    return ctl;
-  }
-
-  Future<void> toggleController(BetterPlayerController controller) async {
-    if (controller.isPlaying()) {
-      await controller.pause().then((value) => print('Paused'));
-      setState(() {
-        isPlaying = false;
-      });
-    } else {
-      await controller.play().then((value) => print('Played'));
-      setState(() {
-        isPlaying = true;
-      });
+  Widget buildVideoPage(BuildContext context, int index) {
+    // Create controller if it doesn't exist for this index
+    if (!controllers.containsKey(index)) {
+      controllers[index] = createController();
+      playingStates[index] = true;
     }
-    print('Controller is playing? ${controller.isPlaying()}');
-  }
 
-  void sleepthing(BetterPlayerController prevCtl) async {
-    await Future<dynamic>.delayed(Duration(seconds: 1)).then((dynamic k) {
-      prevCtl?.dispose();
-      prevCtl = null;
-    });
-  }
+    // Get the controller for this page
+    final controller = controllers[index]!;
 
-  Widget getNext(BuildContext ctx, int index) {
-    but[(index) % 3] = getController();
-    var ctl = but[index % 3];
-    ctl.play();
-
-    var prevCtl = but[(index - 1) % 3];
-    prevCtl?.pause();
-    sleepthing(prevCtl);
+    // Get play state for this page
+    final isPlaying = playingStates[index] ?? true;
 
     return CupertinoPageScaffold(
       child: GestureDetector(
         child: Stack(
           children: [
-            BetterPlayer(controller: ctl),
+            BetterPlayer(controller: controller),
             if (!isPlaying)
               Center(
                 child: Icon(
                   CupertinoIcons.play_arrow_solid,
                   size: 50,
-                  color: CupertinoColors.black,
+                  color: CupertinoColors.white.withOpacity(0.8),
                 ),
               )
           ],
         ),
-        onTap: () {
-          BetterPlayerController.preCache(exampleManifestUrl);
-          //ctl.isPlaying() ? ctl.pause() : ctl.play();
-        },
+        onTap: () => togglePlayPause(index),
       ),
     );
+  }
+
+  void onPageChanged(int index) {
+    // Pause previous page's video
+    if (controllers.containsKey(currentPageIndex)) {
+      controllers[currentPageIndex]?.pause();
+      if (mounted) {
+        setState(() {
+          playingStates[currentPageIndex] = false;
+        });
+      }
+    }
+
+    // Play current page's video
+    if (controllers.containsKey(index)) {
+      controllers[index]?.play();
+      if (mounted) {
+        setState(() {
+          playingStates[index] = true;
+          currentPageIndex = index;
+        });
+      }
+    }
+
+    // Clean up controllers that are far away (memory management)
+    cleanupDistantControllers(index);
+  }
+
+  void cleanupDistantControllers(int currentIndex) {
+    // Keep only nearby controllers (current, previous, next)
+    final keysToKeep = [currentIndex - 1, currentIndex, currentIndex + 1];
+
+    final keysToDispose =
+        controllers.keys.where((key) => !keysToKeep.contains(key)).toList();
+
+    for (final key in keysToDispose) {
+      controllers[key]?.dispose();
+      controllers.remove(key);
+      playingStates.remove(key);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-        debugShowCheckedModeBanner: false,
-        home: Directionality(
-            textDirection: TextDirection.ltr,
-            child: PageView.builder(
-              itemBuilder: getNext,
-              scrollDirection: Axis.vertical,
-            )));
+      debugShowCheckedModeBanner: false,
+      home: Directionality(
+        textDirection: TextDirection.ltr,
+        child: isLoading
+            ? Center(
+                child: CupertinoActivityIndicator(),
+              )
+            : PageView.builder(
+                itemBuilder: buildVideoPage,
+                scrollDirection: Axis.vertical,
+                onPageChanged: onPageChanged,
+              ),
+      ),
+    );
   }
 }

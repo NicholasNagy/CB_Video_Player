@@ -7,7 +7,7 @@ class TheBetterPlayer extends StatefulWidget {
 }
 
 class _BetterPlayerState extends State<TheBetterPlayer> {
-  BetterPlayerController ctl;
+  BetterPlayerController? ctl;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class _BetterPlayerState extends State<TheBetterPlayer> {
       body: AspectRatio(
         aspectRatio: 9 / 16,
         child: BetterPlayer(
-          controller: ctl,
+          controller: ctl!,
         ),
       ),
     );

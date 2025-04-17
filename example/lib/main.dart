@@ -1,6 +1,5 @@
 import 'package:player_test/video_page.dart';
 
-import 'better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
 
@@ -61,7 +60,7 @@ class _AppState extends State<App> {
       child: BetterPlayer(controller: k),
       onTap: () {
         print(k.isPlaying());
-        if (k.isPlaying()) {
+        if (k.isPlaying()!) {
           k.pause();
         } else {
           k.play();
