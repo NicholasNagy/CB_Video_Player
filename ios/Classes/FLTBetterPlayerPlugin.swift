@@ -70,7 +70,6 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
     var eventSink: FlutterEventSink?                       // Sink for sending events through the eventChannel
     var preferredTransform: CGAffineTransform = .identity  // Transform for adjusting video orientation
     private(set) var disposed: Bool = false                // Flag indicating if the player has been disposed
-    private(set) var isPlaying: Bool = false               // Flag indicating if video is currently playing
     var isSeeking: Bool = false                            // Flag indicating if seeking operation is in progress
     var isLooping: Bool = false                            // Flag indicating if video should loop
     private(set) var isInitialized: Bool = false           // Flag indicating if player is initialized
@@ -88,7 +87,6 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
         self.player = AVPlayer()
         self.player.actionAtItemEnd = .none
         isInitialized = false
-        isPlaying = false
         disposed = false
         isSeeking = false
         self.frameUpdater = frameUpdater
@@ -153,7 +151,6 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
     func clear() {
         displayLink.isPaused = true
         isInitialized = false
-        isPlaying = false
         disposed = false
         videoOutput = nil
         failedCount = 0
@@ -200,7 +197,6 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
                 removeObservers()
             }
             player.pause()
-            isPlaying = false
             displayLink.isPaused = true
         }
     }
@@ -459,8 +455,7 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
             let currentTime = player.currentItem?.currentTime(),
             let duration = player.currentItem?.duration,
             currentTime > CMTime.zero, // video was started
-            currentTime < duration, // but not yet finished
-            isPlaying { // instance variable to handle overall state (changed to true when user triggers playback)
+            currentTime < duration { // but not yet finished
                 handleStalled()
             }
         } else if context == &timeRangeContext {
@@ -538,7 +533,6 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
     }
 
     // Player Initialization
-    // Updates playback state based on isPlaying flag
     func updatePlayingState() {
         guard isInitialized, let key = key else {
             NSLog("not initialized and paused!!")
@@ -553,26 +547,10 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
             }
         }
         
-        // Update player playback state based on isPlaying flag
-        if isPlaying {
-            if #available(iOS 10.0, *) {
-                player.playImmediately(atRate: 1.0)
-                player.rate = playerRate
-            } else {
-                player.play()
-                player.rate = playerRate
-            }
-        } else {
-            player.pause()
-        }
-        
-        // Set display link appropriately, however, don't pause
-        // the display link of the video isSeeking, as we don't
-        // want to block the UI from updating during seeking.
-        if isPlaying {
-            displayLink.isPaused = !isPlaying
-        } else if !isSeeking {
-            displayLink.isPaused = !isPlaying
+        // Update display link based on actual player state
+        let playerIsPlaying = player.rate > 0
+        if !isSeeking {
+            displayLink.isPaused = !playerIsPlaying
         }
     }
 
@@ -634,8 +612,15 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
     // Start playing the video
     func play() {
         stalledCount = 0
-        isPlaying = true
-        updatePlayingState()
+        
+        if #available(iOS 10.0, *) {
+            player.playImmediately(atRate: playerRate)
+        } else {
+            player.play()
+            player.rate = playerRate
+        }
+        
+        displayLink.isPaused = false
         
         // iOS 10+ workaround to ensure playback starts correctly
         if #available(iOS 10.0, *) {
@@ -647,8 +632,12 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
 
     // Pause the video
     func pause() {
-        isPlaying = false
-        updatePlayingState() 
+        player.pause()
+        
+        // Only pause display link if not seeking
+        if !isSeeking {
+            displayLink.isPaused = true
+        }
     }
 
     // Get the current playback position in milliseconds
@@ -702,8 +691,10 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
                 // sleep for 2 frames (time is defined by displayLink duration)
                 Thread.sleep(forTimeInterval: 2 * self.displayLink.duration)
                 self.isSeeking = false
-                // set display link as appropriate
-                self.displayLink.isPaused = !self.isPlaying
+                
+                // set display link based on actual player state
+                let playerIsPlaying = player.rate > 0
+                self.displayLink.isPaused = !playerIsPlaying
             }
         }
     }
@@ -750,7 +741,7 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
         }
         
         // Apply rate if currently playing
-        if isPlaying {
+        if player.rate > 0 {
             player.rate = Float(playerRate)
         }
     }
@@ -1096,7 +1087,7 @@ public class FLTBetterPlayerPlugin: NSObject, FlutterPlugin {
         let commandCenter = MPRemoteCommandCenter.shared()
         
         // Enable relevant commands
-        commandCenter.togglePlayPauseCommand.isEnabled = true
+        commandCenter.togglePlayPauseCommand.isEnabled = false
         commandCenter.playCommand.isEnabled = true
         commandCenter.pauseCommand.isEnabled = true
         commandCenter.nextTrackCommand.isEnabled = false
@@ -1104,18 +1095,6 @@ public class FLTBetterPlayerPlugin: NSObject, FlutterPlugin {
         
         if #available(iOS 9.1, *) {
             commandCenter.changePlaybackPositionCommand.isEnabled = true
-        }
-        
-        // Add handlers for each command
-        commandCenter.togglePlayPauseCommand.addTarget { [weak player] event in
-            guard let player = player else { return .commandFailed }
-            
-            if player.isPlaying {
-                player.eventSink?(["event": "play"])
-            } else {
-                player.eventSink?(["event": "pause"])
-            }
-            return .success
         }
         
         commandCenter.playCommand.addTarget { [weak player] event in
