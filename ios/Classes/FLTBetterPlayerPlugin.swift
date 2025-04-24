@@ -533,6 +533,7 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
     }
 
     // Player Initialization
+    // Updates the playing state based on the player's rate
     func updatePlayingState() {
         guard isInitialized, let key = key else {
             NSLog("not initialized and paused!!")
