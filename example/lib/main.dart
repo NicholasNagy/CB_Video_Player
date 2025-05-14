@@ -59,14 +59,14 @@ class _AppState extends State<App> {
     return GestureDetector(
       child: BetterPlayer(controller: k),
       onTap: () {
-        print(k.isPlaying());
-        if (k.isPlaying()!) {
-          k.pause();
-        } else {
-          k.play();
-        }
+        // print(k.isPlaying());
+        // if (k.isPlaying()!) {
+        //   k.pause();
+        // } else {
+        //   k.play();
+        // }
 
-        print("something");
+        // print("something");
       },
     );
   }

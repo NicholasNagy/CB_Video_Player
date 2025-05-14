@@ -34,7 +34,6 @@ class VideoPlayerValue {
     this.position = const Duration(),
     this.absolutePosition,
     this.buffered = const <DurationRange>[],
-    this.isPlaying = false,
     this.isLooping = false,
     this.isBuffering = false,
     this.volume = 1.0,
@@ -64,9 +63,6 @@ class VideoPlayerValue {
 
   /// The currently buffered ranges.
   final List<DurationRange> buffered;
-
-  /// True if the video is playing. False if it's paused.
-  final bool isPlaying;
 
   /// True if the video is looping.
   final bool isLooping;
@@ -115,7 +111,6 @@ class VideoPlayerValue {
     Duration? position,
     DateTime? absolutePosition,
     List<DurationRange>? buffered,
-    bool? isPlaying,
     bool? isLooping,
     bool? isBuffering,
     double? volume,
@@ -127,7 +122,6 @@ class VideoPlayerValue {
       position: position ?? this.position,
       absolutePosition: absolutePosition ?? this.absolutePosition,
       buffered: buffered ?? this.buffered,
-      isPlaying: isPlaying ?? this.isPlaying,
       isLooping: isLooping ?? this.isLooping,
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
@@ -144,7 +138,6 @@ class VideoPlayerValue {
         'position: $position, '
         'absolutePosition: $absolutePosition, '
         'buffered: [${buffered.join(', ')}], '
-        'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
         'isBuffering: $isBuffering, '
         'volume: $volume, '
@@ -204,10 +197,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             size: event.size,
           );
           _initializingCompleter.complete(null);
-          _applyPlayPause();
+          // _applyPlayPause();
+          pause();
           break;
         case VideoEventType.completed:
-          value = value.copyWith(isPlaying: false, position: value.duration);
+          value = value.copyWith(position: value.duration);
           _timer?.cancel();
           break;
         case VideoEventType.bufferingUpdate:
@@ -254,6 +248,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _eventSubscription = _videoPlayerPlatform
         .videoEventsFor(_textureId)
         .listen(eventListener, onError: errorListener);
+  }
+
+  // get if the video is playing
+  Future<bool> get isPlaying async {
+    if (_isDisposed) {
+      return false;
+    }
+    return _videoPlayerPlatform.getIsPlaying(_textureId);
   }
 
   /// Set data source for playing a video from an asset.
@@ -403,8 +405,27 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// has been sent to the platform, not when playback itself is totally
   /// finished.
   Future<void> play() async {
-    value = value.copyWith(isPlaying: true);
-    await _applyPlayPause();
+    if (!_created || _isDisposed) {
+      return;
+    }
+    _timer?.cancel();
+    // TODO: look for potential issue here in asynchronousity
+    await _videoPlayerPlatform.play(_textureId);
+    _timer = Timer.periodic(
+      const Duration(milliseconds: 500),
+      (Timer timer) async {
+        if (_isDisposed) {
+          return;
+        }
+        final Duration? newPosition = await position;
+        final DateTime? newAbsolutePosition = await absolutePosition;
+        // ignore: invariant_booleans
+        if (_isDisposed) {
+          return;
+        }
+        _updatePosition(newPosition, absolutePosition: newAbsolutePosition);
+      },
+    );
   }
 
   /// Sets whether or not the video should loop after playing once. See also
@@ -416,8 +437,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Pauses the video.
   Future<void> pause() async {
-    value = value.copyWith(isPlaying: false);
-    await _applyPlayPause();
+    if (!_created || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.pause(_textureId);
   }
 
   Future<void> _applyLooping() async {
@@ -432,26 +455,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     _timer?.cancel();
-    if (value.isPlaying) {
+    if (!(await this.isPlaying)) {
       // TODO: look for potential issue here in asynchronousity
-      await _videoPlayerPlatform.play(_textureId);
-      _timer = Timer.periodic(
-        const Duration(milliseconds: 500),
-        (Timer timer) async {
-          if (_isDisposed) {
-            return;
-          }
-          final Duration? newPosition = await position;
-          final DateTime? newAbsolutePosition = await absolutePosition;
-          // ignore: invariant_booleans
-          if (_isDisposed) {
-            return;
-          }
-          _updatePosition(newPosition, absolutePosition: newAbsolutePosition);
-        },
-      );
+      await play();
     } else {
-      await _videoPlayerPlatform.pause(_textureId);
+      await pause();
     }
   }
 
