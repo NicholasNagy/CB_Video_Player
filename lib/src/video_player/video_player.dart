@@ -408,24 +408,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!_created || _isDisposed) {
       return;
     }
-    _timer?.cancel();
-    // TODO: look for potential issue here in asynchronousity
     await _videoPlayerPlatform.play(_textureId);
-    _timer = Timer.periodic(
-      const Duration(milliseconds: 500),
-      (Timer timer) async {
-        if (_isDisposed) {
-          return;
-        }
-        final Duration? newPosition = await position;
-        final DateTime? newAbsolutePosition = await absolutePosition;
-        // ignore: invariant_booleans
-        if (_isDisposed) {
-          return;
-        }
-        _updatePosition(newPosition, absolutePosition: newAbsolutePosition);
-      },
-    );
   }
 
   /// Sets whether or not the video should loop after playing once. See also
@@ -456,7 +439,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     _timer?.cancel();
     if (!(await this.isPlaying)) {
-      // TODO: look for potential issue here in asynchronousity
       await play();
     } else {
       await pause();
