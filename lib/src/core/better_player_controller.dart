@@ -345,11 +345,11 @@ class BetterPlayerController {
   }
 
   ///Flag which determines whenever player is playing or not.
-  bool? isPlaying() {
+  Future<bool> isPlaying() {
     if (videoPlayerController == null) {
       throw StateError("The data source has not been initialized");
     }
-    return videoPlayerController!.value.isPlaying;
+    return videoPlayerController!.isPlaying;
   }
 
   ///Flag which determines whenever player is loading video data or not.
@@ -436,10 +436,10 @@ class BetterPlayerController {
             .playerVisibilityChangedBehavior!(visibilityFraction);
       } else {
         if (visibilityFraction == 0) {
-          _wasPlayingBeforePause ??= isPlaying();
+          _wasPlayingBeforePause ??= await isPlaying();
           pause();
         } else {
-          if (_wasPlayingBeforePause == true && !isPlaying()!) {
+          if (_wasPlayingBeforePause == true && !(await isPlaying())) {
             play();
           }
         }
@@ -453,7 +453,7 @@ class BetterPlayerController {
       throw StateError("The data source has not been initialized");
     }
     final position = await videoPlayerController!.position;
-    final wasPlayingBeforeChange = isPlaying()!;
+    final wasPlayingBeforeChange = await isPlaying();
     pause();
     await setupDataSource(betterPlayerDataSource!.copyWith(url: url));
     seekTo(position!);
@@ -470,7 +470,7 @@ class BetterPlayerController {
   ///player starts playing again. if lifecycle is in [AppLifecycleState.paused]
   ///state, then video playback will stop. If showNotification is set in data
   ///source or handleLifecycle is false then this logic will be ignored.
-  void setAppLifecycleState(AppLifecycleState appLifecycleState) {
+  void setAppLifecycleState(AppLifecycleState appLifecycleState) async {
     if (_isAutomaticPlayPauseHandled()) {
       _appLifecycleState = appLifecycleState;
       if (appLifecycleState == AppLifecycleState.resumed) {
@@ -479,7 +479,7 @@ class BetterPlayerController {
         }
       }
       if (appLifecycleState == AppLifecycleState.paused) {
-        _wasPlayingBeforePause ??= isPlaying();
+        _wasPlayingBeforePause ??= await isPlaying();
         pause();
       }
     }

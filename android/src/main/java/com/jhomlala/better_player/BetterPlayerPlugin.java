@@ -82,6 +82,7 @@ public class BetterPlayerPlugin implements FlutterPlugin, ActivityAware, MethodC
     private static final String SET_VOLUME_METHOD = "setVolume";
     private static final String PLAY_METHOD = "play";
     private static final String PAUSE_METHOD = "pause";
+    private static final String GET_IS_PLAYING = "getIsPlaying";
     private static final String SEEK_TO_METHOD = "seekTo";
     private static final String POSITION_METHOD = "position";
     private static final String ABSOLUTE_POSITION_METHOD = "absolutePosition";
@@ -213,6 +214,9 @@ public class BetterPlayerPlugin implements FlutterPlugin, ActivityAware, MethodC
             case PAUSE_METHOD:
                 player.pause();
                 result.success(null);
+                break;
+            case GET_IS_PLAYING:
+                result.success(player.getIsPlaying());
                 break;
             case SEEK_TO_METHOD:
                 int location = ((Number) call.argument(LOCATION_PARAMETER)).intValue();

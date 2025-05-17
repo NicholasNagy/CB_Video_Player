@@ -82,9 +82,10 @@ class _BetterPlayerCupertinoControlsState
     super.didChangeDependencies();
   }
 
-  void _onPlayPause() {
+  void _onPlayPause() async {
+    bool isPlaying = await _controller!.isPlaying;
     setState(() {
-      if (_controller!.value.isPlaying) {
+      if (isPlaying) {
         _betterPlayerController!.pause();
       } else {
         if (!_controller!.value.initialized) {

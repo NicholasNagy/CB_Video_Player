@@ -135,6 +135,14 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<bool> getIsPlaying(int? textureId) {
+    return _channel.invokeMethod<void>(
+      'getIsPlaying',
+      <String, dynamic>{'textureId': textureId},
+    ).then((dynamic value) => value as bool);
+  }
+
+  @override
   Future<void> setVolume(int? textureId, double volume) {
     return _channel.invokeMethod<void>(
       'setVolume',

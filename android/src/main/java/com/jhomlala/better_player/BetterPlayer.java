@@ -597,6 +597,10 @@ final class BetterPlayer {
         exoPlayer.setPlayWhenReady(false);
     }
 
+    boolean getIsPlaying() {
+        return exoPlayer.getPlaybackState() == Player.STATE_READY && exoPlayer.getPlayWhenReady();
+    }
+
     void setLooping(boolean value) {
         exoPlayer.setRepeatMode(value ? REPEAT_MODE_ALL : REPEAT_MODE_OFF);
     }

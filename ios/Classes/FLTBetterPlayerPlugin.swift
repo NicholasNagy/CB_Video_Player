@@ -635,7 +635,28 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
     func play() {
         stalledCount = 0
         isPlaying = true
-        updatePlayingState()
+        guard isInitialized, let key = key else {
+            NSLog("not initialized and paused!!")
+            displayLink.isPaused = true
+            return
+        }
+        
+        // Ensure observers are added if needed
+        if !_observersAdded {
+            if let currentItem = player.currentItem {
+                addObservers(to: currentItem)
+            }
+        }
+
+        if #available(iOS 10.0, *) {
+            player.playImmediately(atRate: 1.0)
+            player.rate = playerRate
+        } else {
+            player.play()
+            player.rate = playerRate
+        }
+
+        displayLink.isPaused = !isPlaying
         
         // iOS 10+ workaround to ensure playback starts correctly
         if #available(iOS 10.0, *) {
@@ -648,7 +669,27 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
     // Pause the video
     func pause() {
         isPlaying = false
-        updatePlayingState() 
+        guard isInitialized, let key = key else {
+            NSLog("not initialized and paused!!")
+            displayLink.isPaused = true
+            return
+        }
+        
+        // Ensure observers are added if needed
+        if !_observersAdded {
+            if let currentItem = player.currentItem {
+                addObservers(to: currentItem)
+            }
+        }
+
+        player.pause()
+
+        displayLink.isPaused = !isPlaying
+    }
+
+    // returns whether the video is currently playing
+    func getIsPlaying() -> Bool {
+        return isPlaying
     }
 
     // Get the current playback position in milliseconds
@@ -1437,7 +1478,11 @@ public class FLTBetterPlayerPlugin: NSObject, FlutterPlugin {
                 // Pause playback
                 player.pause()
                 result(nil)
-                
+
+            case "getIsPlaying":
+                // Check if the player is currently playing, return boolean
+                result(player.getIsPlaying())
+            
             case "setTrackParameters":
                 // Set video quality parameters
                 let width = argsMap["width"] as? Int ?? 0
