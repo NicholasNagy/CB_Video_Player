@@ -75,6 +75,7 @@ class _VideoPageState extends State<VideoPage> {
         autoPlay: true,
         looping: true,
         autoDispose: false,
+        handleLifecycle: false,
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: false,
           enableOverflowMenu: false,
@@ -161,7 +162,7 @@ class _VideoPageState extends State<VideoPage> {
   void onPageChanged(int index) {
     // Pause previous page's video
     if (controllers.containsKey(currentPageIndex)) {
-      controllers[currentPageIndex]?.pause();
+      // controllers[currentPageIndex]?.pause();
       if (mounted) {
         setState(() {
           playingStates[currentPageIndex] = false;
