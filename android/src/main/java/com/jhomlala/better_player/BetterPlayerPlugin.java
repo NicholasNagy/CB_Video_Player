@@ -207,6 +207,14 @@ public class BetterPlayerPlugin implements FlutterPlugin, ActivityAware, MethodC
                 result.success(null);
                 break;
             case PLAY_METHOD:
+                // Pause all other players before playing the current one
+                for (int i = 0; i < videoPlayers.size(); i++) {
+                    long otherTextureId = videoPlayers.keyAt(i);
+                    BetterPlayer otherPlayer = videoPlayers.valueAt(i);
+                    if (otherTextureId != textureId) {
+                        otherPlayer.pause();
+                    }
+                }
                 setupNotification(player);
                 player.play();
                 result.success(null);

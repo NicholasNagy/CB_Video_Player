@@ -1454,7 +1454,14 @@ public class FLTBetterPlayerPlugin: NSObject, FlutterPlugin {
                 result(nil)
                 
             case "play":
-                // Start playback and set up remote notifications
+                // Pause all other players first
+                for (otherTextureId, otherPlayer) in players {
+                    if otherTextureId != textureId {
+                        otherPlayer.pause()
+                    }
+                }
+                
+                // Then play the current player and set up remote notification
                 setupRemoteNotification(for: player)
                 player.play()
                 result(nil)
