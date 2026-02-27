@@ -515,6 +515,17 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _videoPlayerPlatform.setAudioTrack(_textureId, name, index);
   }
 
+  /// Sets the playback speed of the video.
+  ///
+  /// [speed] indicates a speed value with 0.0 to 2.0 range.
+  /// A value of 1.0 is normal speed.
+  Future<void> setSpeed(double speed) async {
+    if (_isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.setSpeed(_textureId, speed);
+  }
+
   void setMixWithOthers(bool mixWithOthers) {
     _videoPlayerPlatform.setMixWithOthers(_textureId, mixWithOthers);
   }

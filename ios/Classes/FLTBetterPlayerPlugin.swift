@@ -761,39 +761,23 @@ class FLTBetterPlayer: NSObject, FlutterTexture, FlutterStreamHandler {
 
     // Set the playback speed
     func setSpeed(_ speed: Double, result: @escaping FlutterResult) {
-        if speed == 1.0 || speed == 0.0 {
-            playerRate = 1.0
-            result(nil)
-        } else if speed < 0 || speed > 2.0 {
+        if speed < 0 || speed > 2.0 {
             result(FlutterError(
                 code: "unsupported_speed",
                 message: "Speed must be >= 0.0 and <= 2.0",
                 details: nil
             ))
-        } else if (speed > 1.0 && player.currentItem?.canPlayFastForward == true) ||
-                (speed < 1.0 && player.currentItem?.canPlaySlowForward == true) {
-            playerRate = Float(speed)
-            result(nil)
-        } else {
-            if speed > 1.0 {
-                result(FlutterError(
-                    code: "unsupported_fast_forward",
-                    message: "This video cannot be played fast forward",
-                    details: nil
-                ))
-            } else {
-                result(FlutterError(
-                    code: "unsupported_slow_forward",
-                    message: "This video cannot be played slow forward",
-                    details: nil
-                ))
-            }
+            return
         }
+        
+        playerRate = Float(speed)
         
         // Apply rate if currently playing
         if isPlaying {
-            player.rate = Float(playerRate)
+            player.rate = playerRate
         }
+        
+        result(nil)
     }
 
     // Set track parameters for quality control
@@ -1506,6 +1490,18 @@ public class FLTBetterPlayerPlugin: NSObject, FlutterPlugin {
                     player.setAudioTrack(name, index: index)
                 }
                 result(nil)
+                
+            case "setSpeed":
+                // Set playback speed
+                if let speed = argsMap["speed"] as? Double {
+                    player.setSpeed(speed, result: result)
+                } else {
+                    result(FlutterError(
+                        code: "invalid_parameter",
+                        message: "Speed parameter is missing or invalid",
+                        details: nil
+                    ))
+                }
                 
             case "setMixWithOthers":
                 // Configure audio mixing behavior

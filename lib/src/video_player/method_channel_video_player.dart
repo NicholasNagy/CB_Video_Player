@@ -214,6 +214,17 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setSpeed(int? textureId, double speed) {
+    return _channel.invokeMethod<void>(
+      'setSpeed',
+      <String, dynamic>{
+        'textureId': textureId,
+        'speed': speed,
+      },
+    );
+  }
+
+  @override
   Future<void> setMixWithOthers(int? textureId, bool mixWithOthers) {
     return _channel.invokeMethod<void>(
       'setMixWithOthers',

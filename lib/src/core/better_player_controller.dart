@@ -352,6 +352,23 @@ class BetterPlayerController {
     return videoPlayerController!.isPlaying;
   }
 
+  /// Sets the playback speed of the video.
+  ///
+  /// [speed] indicates a speed value with 0.0 to 2.0 range.
+  /// A value of 1.0 is normal speed.
+  /// Returns true if the speed was set successfully, false otherwise.
+  Future<bool> setSpeed(double speed) async {
+    if (videoPlayerController == null) {
+      throw StateError("The data source has not been initialized");
+    }
+    try {
+      await videoPlayerController!.setSpeed(speed);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   ///Flag which determines whenever player is loading video data or not.
   bool? isBuffering() {
     if (videoPlayerController == null) {
