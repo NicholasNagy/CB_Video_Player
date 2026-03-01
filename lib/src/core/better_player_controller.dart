@@ -356,17 +356,17 @@ class BetterPlayerController {
   ///
   /// [speed] indicates a speed value with 0.0 to 2.0 range.
   /// A value of 1.0 is normal speed.
-  /// Returns true if the speed was set successfully, false otherwise.
-  Future<bool> setSpeed(double speed) async {
+  ///
+  /// Throws [ArgumentError] if speed is not between 0.0 and 2.0.
+  /// Throws [StateError] if the data source has not been initialized.
+  Future<void> setSpeed(double speed) async {
     if (videoPlayerController == null) {
       throw StateError("The data source has not been initialized");
     }
-    try {
-      await videoPlayerController!.setSpeed(speed);
-      return true;
-    } catch (_) {
-      return false;
+    if (speed < 0.0 || speed > 2.0) {
+      throw ArgumentError.value(speed, 'speed', 'Must be between 0.0 and 2.0');
     }
+    await videoPlayerController!.setSpeed(speed);
   }
 
   ///Flag which determines whenever player is loading video data or not.

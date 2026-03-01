@@ -519,9 +519,18 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// [speed] indicates a speed value with 0.0 to 2.0 range.
   /// A value of 1.0 is normal speed.
+  ///
+  /// Throws [ArgumentError] if speed is not between 0.0 and 2.0.
   Future<void> setSpeed(double speed) async {
     if (_isDisposed) {
       return;
+    }
+    if (speed < 0 || speed > 2.0) {
+      throw ArgumentError.value(
+        speed,
+        'speed',
+        'Speed must be between 0.0 and 2.0',
+      );
     }
     await _videoPlayerPlatform.setSpeed(_textureId, speed);
   }
